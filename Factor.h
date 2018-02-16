@@ -1,6 +1,7 @@
 #ifndef NUMBSKULL_FACTOR_H
 #define NUMBSKULL_FACTOR_H
 
+#include <climits>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -29,7 +30,7 @@ public:
     }
 
 public:
-    size_t fid = SIZE_T_MAX;
+    size_t fid = SIZE_MAX;
     std::string assign;
     std::vector<size_t> variables;
     std::string type; // operator

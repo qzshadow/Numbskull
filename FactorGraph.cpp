@@ -33,7 +33,7 @@ bool FactorGraph::parse_variables_file(std::string file_path) {
         while (in_file >> vid >> assign >> value >> fid) {
             size_t sv = assign_map[assign].var_start_idx;
             size_t sf = assign_map[assign].fac_start_idx;
-            if (variables_map[assign]->at(vid - sv).vid == SIZE_T_MAX)
+            if (variables_map[assign]->at(vid - sv).vid == SIZE_MAX)
                 variables_map[assign]->at(vid - sv) = Variable(vid, assign, value,
                                                                              std::vector<size_t>({fid}));
             else variables_map[assign]->at(vid - sv).factors.push_back(fid);
@@ -57,7 +57,7 @@ bool FactorGraph::parse_factors_file(std::string file_path) {
         while (in_file >> fid >> assign >> vid >> type >> weight) {
             size_t sv = assign_map[assign].var_start_idx;
             size_t sf = assign_map[assign].fac_start_idx;
-            if (factors_map[assign]->at(fid - sf).fid == SIZE_T_MAX)
+            if (factors_map[assign]->at(fid - sf).fid == SIZE_MAX)
                 factors_map[assign]->at(fid - sf) = Factor(fid, assign, std::vector<size_t>({vid}), type,
                                                                          weight);
             else factors_map[assign]->at(fid - sf).variables.push_back(vid);

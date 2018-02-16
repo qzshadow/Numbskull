@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(make-build-debug/Numbskull)
-find_package(Boost 1.66.0 COMPONENTS mpi serialization REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS mpi serialization REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 

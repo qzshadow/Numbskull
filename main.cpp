@@ -60,7 +60,7 @@ int main() {
 //    for (auto fac : facs) std::cout << fac << std::endl;
 //    std::cout << std::endl;
     if (world.rank() == 0) {
-        std::vector<Variable> vec = {Variable(SIZE_T_MAX, "ad", 0.0, {})};
+        std::vector<Variable> vec = {Variable(SIZE_MAX, "ad", 0.0, {})};
         world.send(1, 0, vec);
     } else {
         std::vector<Variable> vec;

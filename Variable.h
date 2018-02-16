@@ -30,7 +30,7 @@ public:
     }
 
 
-    size_t vid = SIZE_T_MAX; // variable id
+    size_t vid = SIZE_MAX; // variable id
     std::string assign;
     double value;
     std::vector<size_t> factors;
