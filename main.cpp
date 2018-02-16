@@ -49,7 +49,7 @@ int main() {
 //        }
 //    }
 
-    std::cout<<"rank "<<world.rank()<<" ready to receive"<<std::endl;
+    //std::cout<<"rank "<<world.rank()<<" ready to receive"<<std::endl;
 //    std::vector<Variable> vars;
 //    std::vector<Factor> facs;
 //    world.recv(0, static_cast<int>(MessageType::Var), vars);
@@ -60,15 +60,17 @@ int main() {
 //    for (auto fac : facs) std::cout << fac << std::endl;
 //    std::cout << std::endl;
     if (world.rank() == 0) {
-        std::vector<Variable> vec = {Variable(SIZE_MAX, "ad", 0.0, {})};
-        world.send(1, 0, vec);
+        Variable var = Variable(1, "ad", 0.0, {1,2,2});
+        world.send(1, 0, var);
     } else {
-        std::vector<Variable> vec;
-        world.recv(0, 0, vec);
-        for (auto var : vec) std::cout<<var<<std::endl;
+        Variable var;
+        // std::vector<int> vec;
+        world.recv(0, 0, var);
+
+        std::cout<<var<<std::endl;
         return 0;
     }
-    std::cout<<env.processor_name()<<std::endl;
+
     return 0;
 }
 
