@@ -26,7 +26,11 @@ public:
 
     template<class Archieve>
     void serialize(Archieve &ar, const unsigned int version_num) {
-        ar << fid << assign << variables << type << weight;
+        ar & fid;
+        ar & assign;
+        ar & variables;
+        ar & type;
+        ar & weight;
     }
 
 public:

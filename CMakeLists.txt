@@ -8,5 +8,5 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Numbskull Factor.cpp Factor.h
         Variable.cpp Variable.h Weight.cpp Weight.h
-        FactorGraph.cpp FactorGraph.h FactorType.cpp FactorType.h GpsPosition.h main.cpp)
+        FactorGraph.cpp FactorGraph.h FactorType.cpp FactorType.h main.cpp)
 target_link_libraries(Numbskull ${Boost_LIBRARIES})

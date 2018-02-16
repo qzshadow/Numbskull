@@ -60,14 +60,18 @@ int main() {
 //    for (auto fac : facs) std::cout << fac << std::endl;
 //    std::cout << std::endl;
     if (world.rank() == 0) {
-        Variable var = Variable(1, "ad", 0.0, {1,2,2});
-        world.send(1, 0, var);
-    } else {
-        Variable var;
-        // std::vector<int> vec;
-        world.recv(0, 0, var);
 
-        std::cout<<var<<std::endl;
+        Variable var = Variable(1, "ad", 0.0, {1,2,3,2});
+        Factor fac = Factor(1,"bc", {1,3,4},"NEQ",0.0);
+        std::vector<Variable> vec = {var, var};
+        world.send(1, 0, fac);
+    } else {
+        std::vector<Variable> vec;
+        Factor fac;
+        // std::vector<int> vec;
+        world.recv(0, 0, fac);
+        std::cout<<fac<<std::endl;
+        //for (auto var : vec) std::cout<<var<<std::endl;
         return 0;
     }
 
