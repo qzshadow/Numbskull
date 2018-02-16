@@ -37,7 +37,7 @@ public:
     double weight;
 };
 
-BOOST_IS_MPI_DATATYPE(Factor)
+BOOST_IS_BITWISE_SERIALIZABLE(Factor)
 
 
 #endif //NUMBSKULL_FACTOR_H
