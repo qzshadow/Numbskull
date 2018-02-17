@@ -22,6 +22,13 @@ public:
 
     Factor();
 
+
+    size_t fid = SIZE_MAX;
+    std::string assign;
+    std::vector<size_t> variables;
+    std::string type; // operator
+    double weight;
+private:
     friend class boost::serialization::access;
 
     template<class Archieve>
@@ -32,13 +39,6 @@ public:
         ar & type;
         ar & weight;
     }
-
-public:
-    size_t fid = SIZE_MAX;
-    std::string assign;
-    std::vector<size_t> variables;
-    std::string type; // operator
-    double weight;
 };
 
 BOOST_IS_BITWISE_SERIALIZABLE(Factor)

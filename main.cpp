@@ -66,7 +66,7 @@ int main() {
         std::cout << "worker " << world.rank() << " receive variables" << std::endl;
         for (auto var : vars) std::cout << var << std::endl;
     }
-    
+
     return 0;
 }
 

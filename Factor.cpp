@@ -4,13 +4,12 @@ Factor::Factor(size_t _fid,
                const std::string &_assign,
                const std::vector<size_t> &_variables,
                const std::string &_type,
-               double _weight) {
-    fid = _fid,
-            assign = _assign;
-    variables = _variables,
-            type = _type;
-    weight = _weight;
-}
+               double _weight) :
+        fid(_fid),
+        assign(_assign),
+        variables(_variables),
+        type(_type),
+        weight(_weight) {}
 
 Factor &Factor::operator=(Factor other) {
     fid = other.fid;
