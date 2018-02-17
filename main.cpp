@@ -7,7 +7,7 @@ namespace mpi = boost::mpi;
 namespace mpl = boost::mpl;
 
 enum class MessageType {
-    Var, Fac
+    Info, Var, Fac
 };
 
 int main() {
@@ -23,7 +23,7 @@ int main() {
             std::string assign = entry.first;
             AssignInfo info = entry.second;
             int machine_index = assign[1] - '0'; // for example, we have B0, C1, machine index is 0, 1
-
+            world.send(machine_index, static_cast<int>(MessageType::Info), info);
 
             if (info.num_variables > 0) {
                 size_t var_end_idx = info.var_start_idx + info.num_variables;
@@ -51,17 +51,22 @@ int main() {
     }
 
     std::cout << "rank " << world.rank() << " ready to receive" << std::endl;
-    std::vector<Variable> vars;
-    std::vector<Factor> facs;
-    world.recv(0, static_cast<int>(MessageType::Var), vars);
-    world.recv(0, static_cast<int>(MessageType::Fac), facs);
-    std::cout << "worker " << world.rank() << " receive variables" << std::endl;
-    for (auto var : vars) std::cout << var << std::endl;
-    std::cout << "worker" << world.rank() << "receive factors" << std::endl;
-    for (auto fac : facs) std::cout << fac << std::endl;
-    std::cout << std::endl;
+    AssignInfo info;
+    world.recv(0, static_cast<int>(MessageType::Info), info);
+    if (info.num_factors > 0) {
+        std::vector<Factor> facs;
+        world.recv(0, static_cast<int>(MessageType::Fac), facs);
+        std::cout << "worker" << world.rank() << "receive factors" << std::endl;
+        for (auto fac : facs) std::cout << fac << std::endl;
+    }
 
-
+    if (info.num_variables > 0) {
+        std::vector<Variable> vars;
+        world.recv(0, static_cast<int>(MessageType::Var), vars);
+        std::cout << "worker " << world.rank() << " receive variables" << std::endl;
+        for (auto var : vars) std::cout << var << std::endl;
+    }
+    
     return 0;
 }
 
