@@ -7,25 +7,8 @@
 #include <memory>
 #include "Variable.h"
 #include "Factor.h"
-class AssignInfo {
-public:
-    size_t var_start_idx;
-    size_t num_variables;
-    size_t fac_start_idx;
-    size_t num_factors;
-    AssignInfo(size_t vi, size_t nv, size_t fi, size_t nf) :
-            var_start_idx(vi), num_variables(nv), fac_start_idx(fi), num_factors(nf) {}
-    AssignInfo() = default;
-    AssignInfo&operator=(AssignInfo other) {
-        var_start_idx = other.var_start_idx;
-        num_variables = other.num_variables;
-        fac_start_idx = other.fac_start_idx;
-        num_factors = other.num_factors;
-        return *this;
-    }
+#include "AssignInfo.h"
 
-
-};
 class FactorGraph {
 public:
     FactorGraph();
