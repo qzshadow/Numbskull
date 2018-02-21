@@ -13,7 +13,7 @@ class Variable {
 public:
     Variable() = default;
 
-    Variable(size_t _vid, std::string _assign, double _value, std::vector<size_t> _factors);
+    Variable(size_t _vid, std::string _assign, int _value, std::vector<size_t> _factors);
 
     Variable &operator=(Variable other);
 
@@ -24,7 +24,7 @@ public:
 
 
     size_t vid = SIZE_MAX; // variable id
-    double value;
+    int value;
     std::string assign;
     std::vector<size_t> factors;
 

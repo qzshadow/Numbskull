@@ -1,6 +1,6 @@
 #include "Variable.h"
 
-Variable::Variable(size_t _vid, std::string _assign, double _value, std::vector<size_t> _factors) :
+Variable::Variable(size_t _vid, std::string _assign, int _value, std::vector<size_t> _factors) :
         vid(_vid),
         assign(_assign),
         factors(_factors),
