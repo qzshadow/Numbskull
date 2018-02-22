@@ -8,10 +8,10 @@ namespace mpi = boost::mpi;
 namespace mpl = boost::mpl;
 
 enum class MessageType {
-    Info, Var, Fac, Comb
+    Info, Var, Fac, Comb, Cnt
 };
 
-int num_samples = 4;
+int num_samples = 1000;
 
 int randomChoice(std::vector<int> values, std::vector<double> probs) {
     std::random_device rd;
@@ -30,6 +30,7 @@ int main() {
     send_map[0] = {1, 2};
     send_map[1] = {0};
     send_map[2] = {0};
+    std::map<size_t, std::map<int, int>> count_map;
 
     if (world.rank() == 0) { // master
         FactorGraph graph("../Input/GraphInfo");
@@ -38,6 +39,7 @@ int main() {
 
         std::cout << graph << std::endl;
         std::map<size_t, AssignInfo> machine_map;
+
         for (auto &entry : graph.assign_map) {
             size_t machine_idx = entry.first[1] - '0';
             AssignInfo &info = entry.second;
@@ -69,10 +71,10 @@ int main() {
                 std::vector<Variable> vec_vars = std::vector<Variable>(graph.variables_map[assign]->begin(),
                                                                        graph.variables_map[assign]->begin() +
                                                                        info.num_variables);
-                std::cout << "try send variables to " << machine_index << std::endl;
-                for (auto &var : vec_vars) std::cout << var << std::endl;
+                //std::cout << "try send variables to " << machine_index << std::endl;
+                //for (auto &var : vec_vars) std::cout << var << std::endl;
                 world.send(machine_index, static_cast<int>(MessageType::Var), vec_vars);
-                std::cout << "send variables to " << machine_index << " finished" << std::endl;
+                //std::cout << "send variables to " << machine_index << " finished" << std::endl;
             }
 
 
@@ -81,10 +83,10 @@ int main() {
                 std::vector<Factor> vec_facs = std::vector<Factor>(graph.factors_map[assign]->begin(),
                                                                    graph.factors_map[assign]->begin() +
                                                                    info.num_factors);
-                std::cout << "try send factors to " << machine_index << std::endl;
-                for (auto &fac : vec_facs) std::cout << fac << std::endl;
+                //std::cout << "try send factors to " << machine_index << std::endl;
+                //for (auto &fac : vec_facs) std::cout << fac << std::endl;
                 world.send(machine_index, static_cast<int>(MessageType::Fac), vec_facs);
-                std::cout << "send factors to " << machine_index << " finished" << std::endl;
+                //std::cout << "send factors to " << machine_index << " finished" << std::endl;
             }
         }
     }
@@ -120,15 +122,21 @@ int main() {
             for (auto machine_idx : send_map[world.rank()]) {
                 std::map<size_t, std::map<int, double>> partial_B_var_probs;
                 world.recv(machine_idx, static_cast<int>(MessageType::Comb), partial_B_var_probs);
+
+
                 for (auto &entry : partial_B_var_probs) {
+//                    std::cout<<entry.first<<std::endl;
+//                    for (auto& val_prob : entry.second) std::cout<<"{"<<val_prob.first<<":"<<val_prob.second<<"}"<<std::endl;
                     if (B_var_probs.count(entry.first) == 0) {
                         B_var_probs[entry.first] = entry.second;
+
                     } else {
                         for (auto &val_prob : entry.second) {
                             B_var_probs[entry.first][val_prob.first] += val_prob.second;
                         }
                     }
                 }
+
                 for (auto &entry : B_var_probs) {
                     std::vector<int> var_val;
                     std::vector<double> probs;
@@ -137,8 +145,12 @@ int main() {
                         var_val.push_back(val_prob.first);
                         probs.push_back(val_prob.second);
                     }
+                    //std::cout<<var_val.size()<<std::endl<<probs.size()<<std::endl;
                     int new_val = randomChoice(var_val, probs);
+                    //std::cout<<entry.first<<std::ends<<conf_info.var_start_idx<<std::ends;
                     vars[entry.first - conf_info.var_start_idx].value = new_val;
+                    count_map[entry.first][new_val]++;
+                    //std::cout<<"here"<<std::endl;
                 }
 
             }
@@ -148,19 +160,19 @@ int main() {
             // receive variables from master node
             // TODO from where, start index
             size_t var_start_idx = 0;
-            std::vector<Variable> rev_vars;
-            world.recv(0, static_cast<int>(MessageType::Var), rev_vars);
+            std::vector<Variable> recv_vars;
+            world.recv(0, static_cast<int>(MessageType::Var), recv_vars);
             //std::cout << world.rank() << "recieved vars from master" << std::endl;
-            for (auto &var : rev_vars) std::cout << var << std::endl;
+            //for (auto &var : recv_vars) std::cout << var << std::endl;
             for (auto &var : vars) {
                 std::map<int, double> var_prob = {{0, 0.0},
-                                                  {0, 0.0}};
+                                                  {1, 0.0}};
                 for (auto &fid : var.factors) {
                     Factor &factor = facs[fid - conf_info.fac_start_idx];
-                    std::cout << factor << std::endl;
+                    //std::cout << factor << std::endl;
                     // TODO a factor connected more than 2 variables?
                     size_t other_vid = factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0];
-                    int other_var_val = rev_vars[other_vid - var_start_idx].value;
+                    int other_var_val = recv_vars[other_vid - var_start_idx].value;
                     for (auto &entry : var_prob) {
                         if (factor.type == "EQU") {
                             entry.second += other_var_val == entry.first ? factor.weight : 0;
@@ -169,7 +181,8 @@ int main() {
                         else exit(-1);
                     }
                 }
-                std::cout << world.rank() << "get out of the inner loop" << std::endl;
+                //std::cout << world.rank() << std::endl;
+                //for (auto& entry : var_prob) std::cout<<entry.first<<std::ends<<entry.second<<std::endl;
                 for (auto &entry : var_prob) entry.second = std::exp(entry.second);
                 std::vector<int> var_val;
                 std::vector<double> probs;
@@ -179,19 +192,24 @@ int main() {
                 }
                 int new_val = randomChoice(var_val, probs);
                 var.value = new_val;
+                count_map[var.vid][new_val]++;
             }
-            std::cout << world.rank() << "finish the first for loop" << std::endl;
+            //std::cout << world.rank() << "finish the first for loop" << std::endl;
             // worker calculate partial result for variables in class B
             std::map<size_t, std::map<int, double>> B_var_probs;
-            for (auto &var : rev_vars) {
+
+            for (auto &var : recv_vars) {
                 size_t vid = var.vid;
+                //TODO the variable contains more than 2 values?
+                B_var_probs[vid] = {{0, 0.0},
+                                    {1, 0.0}};
                 std::vector<size_t> fac_ids = var.factors;
                 for (size_t fid : fac_ids) {
                     if (fid >= conf_info.fac_start_idx && fid < conf_info.fac_start_idx + conf_info.num_factors) {
                         Factor &factor = facs[fid - conf_info.fac_start_idx];
                         // TODO a factor connected more than 2 variables?
                         size_t other_vid = (factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0]);
-                        int other_var_val = rev_vars[other_vid - var_start_idx].value;
+                        int other_var_val = recv_vars[other_vid - var_start_idx].value;
                         for (auto &entry : B_var_probs[vid]) {
                             if (factor.type == "EQU") {
                                 entry.second += other_var_val == entry.first ? factor.weight : 0.0;
@@ -204,9 +222,37 @@ int main() {
             }
 
             // worker nodes send combined result to master node
+//            std::cout<<world.rank()<<"try to send partial var probs to machine 0"<<std::endl;
+//            for (auto& vid_entry : B_var_probs) {
+//                for (auto& val_prob : vid_entry.second) {
+//                    std::cout<<vid_entry.first<<std::ends<<val_prob.first<<std::ends<<val_prob.second<<std::endl;
+//                }
+//            }
             world.send(0, static_cast<int>(MessageType::Comb), B_var_probs);
 
         }
+    }
+
+    // get the sample count for each variable
+    if (world.rank() == 0) {
+        for (auto &var_entry : count_map) {
+            for (auto &val_count : var_entry.second) {
+                std::cout << "var " << var_entry.first << " val " << val_count.first << " count " << val_count.second
+                          << std::endl;
+            }
+        }
+        std::map<size_t, std::map<int, int>> worker_count_map;
+        for (size_t machine_idx : send_map[0]) {
+            world.recv(machine_idx, static_cast<int>(MessageType::Cnt), worker_count_map);
+            for (auto &var_entry : worker_count_map) {
+                for (auto &val_count : var_entry.second) {
+                    std::cout << "var " << var_entry.first << " val " << val_count.first << " count "
+                              << val_count.second << std::endl;
+                }
+            }
+        }
+    } else {
+        world.send(0, static_cast<int>(MessageType::Cnt), count_map);
     }
 
 
