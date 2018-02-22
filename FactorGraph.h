@@ -2,7 +2,7 @@
 #define NUMBSKULL_FACTORGRAPH_H
 
 #include <vector>
-#include <map>
+#include <boost/serialization/map.hpp>
 #include <fstream>
 #include <memory>
 #include "Variable.h"

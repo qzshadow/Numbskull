@@ -17,5 +17,5 @@ clean:
 	rm -f $(TARGET)
 
 run: all
-	$(MPIRUN) -np 2 $(TARGET)
+	$(MPIRUN) -np 3 $(TARGET)
 

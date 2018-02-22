@@ -3,14 +3,15 @@
 
 #include "FactorGraph.h"
 
+
 namespace mpi = boost::mpi;
 namespace mpl = boost::mpl;
 
 enum class MessageType {
-    Info, Var, Fac
+    Info, Var, Fac, Comb
 };
 
-int num_samples = 1;
+int num_samples = 4;
 
 int randomChoice(std::vector<int> values, std::vector<double> probs) {
     std::random_device rd;
@@ -92,6 +93,32 @@ int main() {
                 world.send(machine_idx, static_cast<int>(MessageType::Var), vars);
             }
             // wait for worker nodes' response
+            std::map<size_t, std::map<int, double>> B_var_probs;
+            for (auto machine_idx : send_map[world.rank()]) {
+                std::map<size_t, std::map<int, double>> partial_B_var_probs;
+                world.recv(machine_idx, static_cast<int>(MessageType::Comb), partial_B_var_probs);
+                for (auto &entry : partial_B_var_probs) {
+                    if (B_var_probs.count(entry.first) == 0) {
+                        B_var_probs[entry.first] = entry.second;
+                    } else {
+                        for (auto &val_prob : entry.second) {
+                            B_var_probs[entry.first][val_prob.first] += val_prob.second;
+                        }
+                    }
+                }
+                for (auto &entry : B_var_probs) {
+                    std::vector<int> var_val;
+                    std::vector<double> probs;
+
+                    for (auto &val_prob : entry.second) {
+                        var_val.push_back(val_prob.first);
+                        probs.push_back(val_prob.second);
+                    }
+                    int new_val = randomChoice(var_val, probs);
+                    vars[entry.first - conf_info.var_start_idx].value = new_val;
+                }
+
+            }
 
 
         } else {
@@ -100,44 +127,63 @@ int main() {
             size_t var_start_idx = 0;
             std::vector<Variable> rev_vars;
             world.recv(0, static_cast<int>(MessageType::Var), rev_vars);
-
+            std::cout << world.rank() << "recieved vars from master" << std::endl;
+            for (auto &var : rev_vars) std::cout << var << std::endl;
             for (auto &var : vars) {
                 std::map<int, double> var_prob = {{0, 0.0},
                                                   {0, 0.0}};
                 for (auto &fid : var.factors) {
                     Factor &factor = facs[fid - conf_info.fac_start_idx];
                     // TODO a factor connected more than 2 variables?
-                    size_t other_vid = factor.variables[0] == var.vid ? factor.variables[1] ? factor.variables[0];
+                    size_t other_vid = factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0];
                     int other_var_val = rev_vars[other_vid - var_start_idx].value;
                     for (auto &entry : var_prob) {
                         if (factor.type == "EQU") {
-                            var_prob[entry.first] += other_var_val == var.value ? factor.weight : 0;
+                            entry.second += other_var_val == entry.first ? factor.weight : 0;
                         }
                             // TODO support other factor type
                         else exit(-1);
                     }
                 }
-                std::for_each(var_prob.begin(), var_prob.end(), [](auto& entry){entry.second = std::exp(entry.second);});
+                for (auto &entry : var_prob) entry.second = std::exp(entry.second);
                 std::vector<int> var_val;
                 std::vector<double> probs;
-                for (auto& entry : var_prob) {
+                for (auto &entry : var_prob) {
                     var_val.push_back(entry.first);
                     probs.push_back(entry.second);
                 }
                 int new_val = randomChoice(var_val, probs);
                 var.value = new_val;
             }
+            std::cout << world.rank() << "finish the first for loop" << std::endl;
             // worker calculate partial result for variables in class B
             std::map<size_t, std::map<int, double>> B_var_probs;
-            for (auto& entry : rev_vars) {
-                
+            for (auto &var : rev_vars) {
+                size_t vid = var.vid;
+                std::vector<size_t> fac_ids = var.factors;
+                for (size_t fid : fac_ids) {
+                    if (fid >= conf_info.fac_start_idx && fid < conf_info.fac_start_idx + conf_info.num_factors) {
+                        Factor &factor = facs[fid - conf_info.fac_start_idx];
+                        // TODO a factor connected more than 2 variables?
+                        size_t other_vid = (factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0]);
+                        int other_var_val = rev_vars[other_vid - var_start_idx].value;
+                        for (auto &entry : B_var_probs[vid]) {
+                            if (factor.type == "EQU") {
+                                entry.second += other_var_val == entry.first ? factor.weight : 0.0;
+                            }
+                                // TODO support other factor types
+                            else exit(-1);
+                        }
+                    }
+                }
             }
 
             // worker nodes send combined result to master node
+            world.send(0, static_cast<int>(MessageType::Comb), B_var_probs);
 
-            // wait for
         }
     }
+
 
     return 0;
 }
