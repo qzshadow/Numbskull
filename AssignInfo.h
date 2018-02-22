@@ -7,6 +7,7 @@
 
 #include <boost/serialization/access.hpp>
 #include <boost/mpi/datatype.hpp>
+#include <ostream>
 
 class AssignInfo {
 public:
@@ -26,6 +27,11 @@ public:
         fac_start_idx = other.fac_start_idx;
         num_factors = other.num_factors;
         return *this;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const AssignInfo &info) {
+        os << info.var_start_idx << std::ends << info.num_variables << std::ends << info.fac_start_idx << std::ends
+           << info.num_factors << std::endl;
     }
 
 private:
