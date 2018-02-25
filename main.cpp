@@ -11,7 +11,7 @@ enum class MessageType {
     Info, Var, Fac, Comb, Cnt
 };
 
-int num_samples = 1000;
+int num_samples = 10000;
 
 int randomChoice(std::vector<int> values, std::vector<double> probs) {
     std::random_device rd;
@@ -111,7 +111,7 @@ int main() {
     }
 
 
-    while (--num_samples) {
+    while (num_samples--) {
         if (world.rank() == 0) {
             // master node send variables to worker nodes
             for (auto machine_idx : send_map[world.rank()]) {
@@ -136,23 +136,22 @@ int main() {
                         }
                     }
                 }
+            }
 
-                for (auto &entry : B_var_probs) {
-                    std::vector<int> var_val;
-                    std::vector<double> probs;
+            for (auto &entry : B_var_probs) {
+                std::vector<int> var_val;
+                std::vector<double> probs;
 
-                    for (auto &val_prob : entry.second) {
-                        var_val.push_back(val_prob.first);
-                        probs.push_back(val_prob.second);
-                    }
-                    //std::cout<<var_val.size()<<std::endl<<probs.size()<<std::endl;
-                    int new_val = randomChoice(var_val, probs);
-                    //std::cout<<entry.first<<std::ends<<conf_info.var_start_idx<<std::ends;
-                    vars[entry.first - conf_info.var_start_idx].value = new_val;
-                    count_map[entry.first][new_val]++;
-                    //std::cout<<"here"<<std::endl;
+                for (auto &val_prob : entry.second) {
+                    var_val.push_back(val_prob.first);
+                    probs.push_back(std::exp(val_prob.second));
                 }
-
+                //std::cout<<var_val.size()<<std::endl<<probs.size()<<std::endl;
+                int new_val = randomChoice(var_val, probs);
+                //std::cout<<entry.first<<std::ends<<conf_info.var_start_idx<<std::ends;
+                vars[entry.first - conf_info.var_start_idx].value = new_val;
+                count_map[entry.first][new_val]++;
+                //std::cout<<"here"<<std::endl;
             }
 
 
@@ -165,7 +164,8 @@ int main() {
             //std::cout << world.rank() << "recieved vars from master" << std::endl;
             //for (auto &var : recv_vars) std::cout << var << std::endl;
             for (auto &var : vars) {
-                std::map<int, double> var_prob = {{0, 0.0},
+                // TODO variable has more than 2 value?
+                std::map<int, double> val_prob = {{0, 0.0},
                                                   {1, 0.0}};
                 for (auto &fid : var.factors) {
                     Factor &factor = facs[fid - conf_info.fac_start_idx];
@@ -173,7 +173,7 @@ int main() {
                     // TODO a factor connected more than 2 variables?
                     size_t other_vid = factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0];
                     int other_var_val = recv_vars[other_vid - var_start_idx].value;
-                    for (auto &entry : var_prob) {
+                    for (auto &entry : val_prob) {
                         if (factor.type == "EQU") {
                             entry.second += other_var_val == entry.first ? factor.weight : 0;
                         }
@@ -182,11 +182,11 @@ int main() {
                     }
                 }
                 //std::cout << world.rank() << std::endl;
-                //for (auto& entry : var_prob) std::cout<<entry.first<<std::ends<<entry.second<<std::endl;
-                for (auto &entry : var_prob) entry.second = std::exp(entry.second);
+                //for (auto& entry : val_prob) std::cout<<entry.first<<std::ends<<entry.second<<std::endl;
+                for (auto &entry : val_prob) entry.second = std::exp(entry.second);
                 std::vector<int> var_val;
                 std::vector<double> probs;
-                for (auto &entry : var_prob) {
+                for (auto &entry : val_prob) {
                     var_val.push_back(entry.first);
                     probs.push_back(entry.second);
                 }
@@ -208,8 +208,9 @@ int main() {
                     if (fid >= conf_info.fac_start_idx && fid < conf_info.fac_start_idx + conf_info.num_factors) {
                         Factor &factor = facs[fid - conf_info.fac_start_idx];
                         // TODO a factor connected more than 2 variables?
-                        size_t other_vid = (factor.variables[0] == var.vid ? factor.variables[1] : factor.variables[0]);
-                        int other_var_val = recv_vars[other_vid - var_start_idx].value;
+                        size_t other_vid = (factor.variables[0] == vid ? factor.variables[1] : factor.variables[0]);
+                        int other_var_val = vars[other_vid - var_start_idx].value;
+
                         for (auto &entry : B_var_probs[vid]) {
                             if (factor.type == "EQU") {
                                 entry.second += other_var_val == entry.first ? factor.weight : 0.0;
