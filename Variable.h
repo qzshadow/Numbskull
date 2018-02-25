@@ -1,3 +1,7 @@
+/**
+ * Variable class
+ * See comments of class members for details
+ */
 #ifndef NUMBSKULL_VARIABLE_H
 #define NUMBSKULL_VARIABLE_H
 
@@ -19,20 +23,20 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Variable &var);
 
-
-
-
-
-    size_t vid = SIZE_MAX; // variable id
+    // variable id
+    size_t vid = SIZE_MAX;
+    // variable value
     int value;
+    // assign info (e.g. "B0", variable type 'B', assign to machine 0)
     std::string assign;
+    // factor id associated with this variable
     std::vector<size_t> factors;
 
 private:
     friend class boost::serialization::access;
+
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
+    void serialize(Archive & ar, const unsigned int version) {
         ar & vid;
         ar & value;
         ar & assign;

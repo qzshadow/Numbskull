@@ -36,7 +36,7 @@ var_id: long int, starts from 0
 
 assign: string(e.g. "B0" means the factor belongs to type 'B', assigned to machine 0)
 
-init_val: categorical initial value for this variable
+init_val: int, categorical initial value for this variable
 
 factor_id: long int, factos this variable connected to, starts from 0
 
@@ -53,3 +53,6 @@ num_vars: long int, number of variables in this machine
 fac_start_idx: long int, the start index of factor in this machine
 
 num_facs: long int, number of factors in this machine
+
+## Topological picture of the input
+![alt text](Input/topo.png)

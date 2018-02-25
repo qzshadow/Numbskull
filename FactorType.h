@@ -1,7 +1,8 @@
-//
-// Created by ZHOU QIN on 2/13/18.
-//
-
+/*
+ * Factor type class
+ * use enum class to represent factor types
+ * only support EQU now
+ */
 #ifndef MAKE_BUILD_DEBUG_NUMBSKULL_FACTORTYPE_H
 #define MAKE_BUILD_DEBUG_NUMBSKULL_FACTORTYPE_H
 

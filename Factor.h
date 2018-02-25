@@ -1,3 +1,7 @@
+/*
+ * Factor class
+ * See comments of class members for details
+ */
 #ifndef NUMBSKULL_FACTOR_H
 #define NUMBSKULL_FACTOR_H
 
@@ -18,15 +22,20 @@ public:
            const std::string &_type, double _weight);
 
     Factor &operator=(Factor other);
+
     friend std::ostream&operator<<(std::ostream&, const Factor& fac);
 
     Factor();
 
-
+    // factor id
     size_t fid = SIZE_MAX;
+    // factor assign (e.g. "D1", factor type 'D', assigned to machine 1)
     std::string assign;
+    // variable ids associated to this factor
     std::vector<size_t> variables;
+    // type of this factor (e.g. "EQU")
     std::string type; // operator
+    // weight of this factor
     double weight;
 private:
     friend class boost::serialization::access;
