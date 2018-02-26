@@ -13,9 +13,8 @@ This will install boost 1.58.0 and openmpi 1.10
 
 ## Compile and Run
 ```
-cd cmake-build-debug
-make
-mpirun -np 3 Numbskull
+cd make-build-debug
+make run
 ```
 
 ## Input Format
