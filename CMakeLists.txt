@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5)
 project(cmake-build-debug/Numbskull)
-find_package(Boost 1.54.0 COMPONENTS mpi serialization REQUIRED)
+find_package(Boost 1.58.0 COMPONENTS mpi serialization REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Numbskull
         Factor.cpp Factor.h

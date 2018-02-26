@@ -12,7 +12,18 @@ This will install boost 1.54.0 and openmpi 1.6.5
 This will install boost 1.58.0 and openmpi 1.10
 
 ## Compile and Run
+### Use cmake
+**support cmake 3.5+**
+```bash
+mkdir cmake-build-debug
+cd cmake-build-debug
+cmake ..
+make
+mpirun -np 3 Numbskull
 ```
+
+### Use make (not recommend)
+```bash
 cd make-build-debug
 make run
 ```
