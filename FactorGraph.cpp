@@ -28,7 +28,7 @@ bool FactorGraph::parse_variables_file(std::string file_path) {
     if (in_file.is_open()) {
         size_t vid;
         std::string assign;
-        double value;
+        int value;
         size_t fid;
         while (in_file >> vid >> assign >> value >> fid) {
             size_t sv = assign_map[assign].var_start_idx;
