@@ -40,8 +40,8 @@ public:
 private:
     friend class boost::serialization::access;
 
-    template<class Archieve>
-    void serialize(Archieve &ar, const unsigned int version_num) {
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version_num) {
         ar & fid;
         ar & assign;
         ar & variables;

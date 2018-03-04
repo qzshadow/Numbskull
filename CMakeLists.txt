@@ -13,5 +13,5 @@ add_executable(Numbskull
         Weight.cpp Weight.h
         FactorGraph.cpp FactorGraph.h
         FactorType.cpp FactorType.h
-        main.cpp Utility.cpp Utility.h)
+        main.cpp Utility.cpp Utility.h Edge.cpp Edge.h)
 target_link_libraries(Numbskull ${Boost_LIBRARIES})
