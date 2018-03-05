@@ -4,3 +4,10 @@
 
 #include "Edge.h"
 
+void NegateEdge::transform() {
+
+}
+
+void IdentityEdge::transform() {
+
+}
