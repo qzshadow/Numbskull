@@ -8,9 +8,11 @@
 
 class Utility {
 public:
-    static int randomChoice(std::vector<int> values, std::vector<double> probs);
+    static int randomChoice(std::vector<int> values, std::vector<float> energy);
 
-    static int randomChoice(std::map<int, double> val_probs);
+    //static int randomChoice(std::map<int, float> val_energy);
+
+    static int randomChoice(std::vector<float> energy_vec);
 };
 
 

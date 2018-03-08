@@ -6,23 +6,35 @@
 #define CMAKE_BUILD_DEBUG_NUMBSKULL_EDGE_H
 
 #include <cstddef>
+#include <cstdint>
+#include "Variable.h"
 
 class Edge {
 public:
-    virtual void transform() = 0;
+    virtual float transform() = 0;
 };
 
 class NegateEdge : public Edge {
 public:
-    void transform() override;
+    float transform() override;
+
+    //NegateEdge(Variable* var, size_t eid, float edge_val);
 private:
-    size_t var_id;
+    Variable *_var = nullptr;
+    size_t _eid = SIZE_MAX;
+    //float _edge_val = 0.0;
 
 };
 
 class IdentityEdge : public Edge {
 public:
-    void transform() override;
+    float transform() override;
+
+private:
+    Variable *_var = nullptr;
+    size_t _eid = SIZE_MAX;
+    //float _edge_val = 0.0
+
 
 };
 

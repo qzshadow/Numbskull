@@ -5,7 +5,7 @@
 #ifndef NUMBSKULL_FACTOR_H
 #define NUMBSKULL_FACTOR_H
 
-#include "Variable.h"
+#include "Edge.h"
 #include <cstddef>
 #include <vector>
 
@@ -18,7 +18,8 @@ class AndFactor : public Factor{
 public:
     float eval() override;
 private:
-    std::vector<size_t> edge_id_vec;
+    std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec;
+    float _weight = 1.0;
 
 };
 

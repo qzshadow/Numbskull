@@ -8,44 +8,44 @@
 
 #include <vector>
 #include <cstddef>
+#include <memory>
+
+//#include "Factor.h"
+class Factor; // Forward declare Factor class to break out the circular include of Factor Edge and Variable
 class Variable {
 public:
     // friend std::ostream &operator<<(std::ostream &os, const Variable &var);
     Variable() = default;
     virtual void resample() = 0;
 
-    virtual bool get_value_bool() {};
-
-    virtual int get_value_int() {};
+    virtual int get_value() {};
 };
 
 class BinaryVariable : public Variable {
 public:
     BinaryVariable() = default;
-    BinaryVariable(bool val, float prior_energy, std::vector<size_t> fac_id_vec);
 
     void resample() override;
-    inline bool get_value_bool() override {return _value;};
-    //int get_value_int();
+
+    inline int get_value() override { return _value; };
 private:
-    bool _value = 0;
+    int _value = 0;
     float _prior_energy = 0.0;
-    std::vector<size_t> _fac_id_vec;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
 };
 
 class MultinomialVariable : public Variable {
 public:
     MultinomialVariable() = default;
-    MultinomialVariable(bool val, float prior_energy, std::vector<size_t> fac_id_vec);
 
     void resample() override;
-    inline int get_value_int() override {return _value;};
-    //bool get_value_bool();
+
+    inline int get_value() override { return _value; };
 private:
-    int domain_size = 0;
-    bool _value = 0;
+    unsigned int _domain_size = 0;
+    int _value = 0;
     float _prior_energy = 0.0;
-    std::vector<size_t> _fac_id_vec;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
 };
 
 
