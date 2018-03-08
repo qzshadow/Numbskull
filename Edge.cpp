@@ -10,10 +10,10 @@ float NegateEdge::transform() {
     return -_var->get_value();
 }
 
-//NegateEdge::NegateEdge(Variable* var, size_t eid, float edge_val) :
-//_var(var), _eid(eid), _edge_val(edge_val){
-//
-//}
+NegateEdge::NegateEdge(Variable *var, size_t eid) :
+        _var(var), _eid(eid) {
+
+}
 
 float IdentityEdge::transform() {
 //    _edge_val = _var->get_value();

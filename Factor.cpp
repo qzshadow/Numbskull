@@ -8,3 +8,7 @@ float AndFactor::eval() {
     }
     return result * _weight;
 }
+
+AndFactor::AndFactor(std::vector<Edge *> edge_ptr_vec, float weight) :
+        _edge_ptr_vec(std::make_unique<std::vector<Edge *>>(edge_ptr_vec)),
+        _weight(weight) {}

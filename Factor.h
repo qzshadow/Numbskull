@@ -16,7 +16,11 @@ public:
 
 class AndFactor : public Factor{
 public:
+    AndFactor() = default;
+
+    AndFactor(std::vector<Edge *> edge_ptr_vec, float weight);
     float eval() override;
+
 private:
     std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec;
     float _weight = 1.0;

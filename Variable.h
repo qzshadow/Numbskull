@@ -25,6 +25,8 @@ class BinaryVariable : public Variable {
 public:
     BinaryVariable() = default;
 
+    BinaryVariable(int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+
     void resample() override;
 
     inline int get_value() override { return _value; };
@@ -37,6 +39,8 @@ private:
 class MultinomialVariable : public Variable {
 public:
     MultinomialVariable() = default;
+
+    MultinomialVariable(int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
 
     void resample() override;
 

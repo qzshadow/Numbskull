@@ -18,7 +18,7 @@ class NegateEdge : public Edge {
 public:
     float transform() override;
 
-    //NegateEdge(Variable* var, size_t eid, float edge_val);
+    NegateEdge(Variable *var, size_t eid);
 private:
     Variable *_var = nullptr;
     size_t _eid = SIZE_MAX;
