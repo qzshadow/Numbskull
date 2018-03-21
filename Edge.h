@@ -16,9 +16,10 @@ public:
 
 class NegateEdge : public Edge {
 public:
+    NegateEdge() = default;
     float transform() override;
 
-    NegateEdge(Variable *var, size_t eid);
+    NegateEdge(size_t eid, Variable *var);
 private:
     Variable *_var = nullptr;
     size_t _eid = SIZE_MAX;
@@ -28,7 +29,11 @@ private:
 
 class IdentityEdge : public Edge {
 public:
+    IdentityEdge() = default;
+
+    IdentityEdge(size_t eid, Variable *var);
     float transform() override;
+
 
 private:
     Variable *_var = nullptr;

@@ -10,7 +10,7 @@ float NegateEdge::transform() {
     return -_var->get_value();
 }
 
-NegateEdge::NegateEdge(Variable *var, size_t eid) :
+NegateEdge::NegateEdge(size_t eid, Variable *var) :
         _var(var), _eid(eid) {
 
 }
@@ -19,4 +19,9 @@ float IdentityEdge::transform() {
 //    _edge_val = _var->get_value();
 //    return _edge_val;
     return _var->get_value();
+}
+
+IdentityEdge::IdentityEdge(size_t eid, Variable *var) :
+        _var(var), _eid(eid) {
+
 }

@@ -5,7 +5,6 @@
 #ifndef NUMBSKULL_VARIABLE_H
 #define NUMBSKULL_VARIABLE_H
 
-
 #include <vector>
 #include <cstddef>
 #include <memory>
@@ -19,18 +18,29 @@ public:
     virtual void resample() = 0;
 
     virtual int get_value() {};
+
+    virtual void set_factor_vec(std::vector<Factor *>)= 0;
 };
 
 class BinaryVariable : public Variable {
 public:
     BinaryVariable() = default;
 
-    BinaryVariable(int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+    BinaryVariable(size_t vid, int value, float prior_energy);
+
+    BinaryVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
 
     void resample() override;
 
-    inline int get_value() override { return _value; };
+    inline int get_value() override { return _value; }
+
+    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
+        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
+    }
+
+
 private:
+    size_t _vid = SIZE_MAX;
     int _value = 0;
     float _prior_energy = 0.0;
     std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
@@ -40,12 +50,21 @@ class MultinomialVariable : public Variable {
 public:
     MultinomialVariable() = default;
 
-    MultinomialVariable(int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+    MultinomialVariable(size_t vid, int value, float prior_energy);
+
+    MultinomialVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
 
     void resample() override;
 
     inline int get_value() override { return _value; };
+
+    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
+        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
+    }
+
+
 private:
+    size_t _vid = SIZE_MAX;
     unsigned int _domain_size = 0;
     int _value = 0;
     float _prior_energy = 0.0;

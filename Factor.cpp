@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Factor.h"
 
 
@@ -5,7 +6,9 @@ float AndFactor::eval() {
     bool result = true;
     for (auto &edge_ptr : *_edge_ptr_vec) {
         result = result && edge_ptr->transform();
+        if (!result) break;
     }
+    //std::cout<<result*_weight<<std::endl;
     return result * _weight;
 }
 
