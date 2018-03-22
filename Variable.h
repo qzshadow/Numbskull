@@ -19,6 +19,10 @@ public:
 
     virtual int get_value() {};
 
+    virtual size_t get_vid() {};
+
+    virtual void set_value(int value) {};
+
     virtual void set_factor_vec(std::vector<Factor *>)= 0;
 };
 
@@ -33,6 +37,10 @@ public:
     void resample() override;
 
     inline int get_value() override { return _value; }
+
+    inline void set_value(int value) override { _value = value; }
+
+    inline size_t get_vid() override { return _vid; }
 
     inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
         _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
@@ -57,6 +65,10 @@ public:
     void resample() override;
 
     inline int get_value() override { return _value; };
+
+    inline void set_value(int value) override { _value = value; }
+
+    inline size_t get_vid() override { return _vid; }
 
     inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
         _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);

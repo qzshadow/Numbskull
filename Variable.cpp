@@ -8,7 +8,7 @@
 void BinaryVariable::resample() {
     //std::cout<<"resample called"<<std::endl;
     std::vector<float> energy_vec(2);
-    std::cout << _factor_ptr_vec->size() << std::endl;
+    // std::cout << _factor_ptr_vec->size() << std::endl;
     for (auto &factor_ptr : *_factor_ptr_vec) {
         for (int value = 0; value < 2; ++value) {
             _value = value;

@@ -13,18 +13,31 @@
 #include "Factor.h"
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 class FactorGraph {
 public:
 
 
+    const std::shared_ptr<std::vector<Variable *>> &get_var_ptr_vec() const;
+
+    void set_var_ptr_vec(const std::shared_ptr<std::vector<Variable *>> &_var_ptr_vec);
+
+    const std::shared_ptr<std::vector<Edge *>> &get_edge_ptr_vec() const;
+
+    void set_edge_ptr_vec(const std::shared_ptr<std::vector<Edge *>> &_edge_ptr_vec);
+
+    const std::shared_ptr<std::vector<Factor *>> &get_factor_ptr_vec() const;
+
+    void set_factor_ptr_vec(const std::shared_ptr<std::vector<Factor *>> &_factor_ptr_vec);
+
 private:
-    Variable **_var_vec_ptr;
-    std::map<std::string, size_t> _var_map;
-    Edge **_edge_vec_ptr;
-    std::map<std::string, size_t> _edge_map;
-    Factor **_factor_vec_ptr;
-    std::map<std::string, size_t> _factor_map;
+    std::unordered_map<std::string, size_t> _var_map;
+    std::shared_ptr<std::vector<Edge *>> _edge_ptr_vec;
+    std::unordered_map<std::string, size_t> _edge_map;
+    std::shared_ptr<std::vector<Factor *>> _factor_ptr_vec;
+    std::shared_ptr<std::vector<Variable *>> _var_ptr_vec;
+    std::unordered_map<std::string, size_t> _factor_map;
 };
 
 
