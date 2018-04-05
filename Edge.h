@@ -11,7 +11,18 @@
 
 class Edge {
 public:
+    Edge() = default;
+
+    Edge(size_t eid, Variable *var);
     virtual float transform() = 0;
+
+    Variable *get_var() const {
+        return _var;
+    }
+
+protected:
+    Variable *_var = nullptr;
+    size_t _eid = SIZE_MAX;
 };
 
 class NegateEdge : public Edge {
@@ -20,10 +31,6 @@ public:
     float transform() override;
 
     NegateEdge(size_t eid, Variable *var);
-private:
-    Variable *_var = nullptr;
-    size_t _eid = SIZE_MAX;
-    //float _edge_val = 0.0;
 
 };
 
@@ -33,13 +40,6 @@ public:
 
     IdentityEdge(size_t eid, Variable *var);
     float transform() override;
-
-
-private:
-    Variable *_var = nullptr;
-    size_t _eid = SIZE_MAX;
-    //float _edge_val = 0.0
-
 
 };
 
