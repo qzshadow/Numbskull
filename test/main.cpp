@@ -1,74 +1,99 @@
-#include "../Factor.h"
+#include "../FactorGraph.h"
 #include <iostream>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <unordered_map>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
 
 namespace mpi = boost::mpi;
 
-enum class MessageType {
-    VAR1_VAL, VAR2_VAL, VAR3_VAL
+enum class MsgType {
+    M_Send_B, W_Send_D
 };
 
 int main() {
     mpi::environment env;
     mpi::communicator world;
-    size_t num_samples = 10000;
-
-
-    auto *var0 = new BinaryVariable(0, 0, 0.0);
-    auto *var1 = new BinaryVariable(1, 0, 0.0);
-    auto *var2 = new BinaryVariable(2, 0, 0.0);
-    auto *edge0_ptr = new IdentityEdge(0, var1_ptr);
-    auto *edge1_ptr = new IdentityEdge(1, var2_ptr);
-    auto *edge2_ptr = new IdentityEdge(2, var1_ptr);
-    auto *edge3_ptr = new IdentityEdge(3, var3_ptr);
-    std::vector<Edge *> factor1_edge_ptr_vec = {edge1_ptr, edge2_ptr};
-    auto *factor1_ptr = new AndFactor(factor1_edge_ptr_vec, 1.0);
-    std::vector<Edge *> factor2_edge_ptr_vec = {edge3_ptr, edge4_ptr};
-    auto *factor2_ptr = new AndFactor(factor2_edge_ptr_vec, 1.0);
-    var1_ptr->set_factor_vec({factor1_ptr, factor2_ptr});
-    var2_ptr->set_factor_vec({factor1_ptr});
-    var3_ptr->set_factor_vec({factor2_ptr});
+    size_t num_samples = 1000;
+    const int master_rank = 0;
+    const std::vector<int> workers_rank = {1, 2};
     std::unordered_map<size_t, std::array<int, 2>> counter;
-    if (world.rank() == 0) {
 
+    FactorGraph graph;
+    if (world.rank() == master_rank) {
+        auto *var0 = new BinaryVariable(0, 0, 0.0);
+        auto *var1 = new BinaryVariable(1, 0, 0.0);
+        auto *var2 = new BinaryVariable(2, 0, 0.0);
+        graph.owned_var_ptr_vec = {var0};
+        graph.cached_var_ptr_vec = {var1, var2};
+        auto *edge0 = new IdentityEdge(0, var0);
+        auto *edge1 = new IdentityEdge(1, var1);
+        auto *edge2 = new IdentityEdge(2, var0);
+        auto *edge3 = new IdentityEdge(3, var2);
+        auto *factor0 = new AndFactor(0, {edge0, edge1}, 1.0);
+        auto *factor1 = new AndFactor(1, {edge2, edge3}, 1.0);
+        var0->set_factor_vec({factor0, factor1});
+    } else if (world.rank() == 1) {
+        auto *var0 = new BinaryVariable(0, 0, 0.0);
+        auto *var1 = new BinaryVariable(1, 0, 0.0);
+        graph.owned_var_ptr_vec = {var1};
+        graph.cached_var_ptr_vec = {var0};
+        auto *edge0 = new IdentityEdge(0, var0);
+        auto *edge1 = new IdentityEdge(1, var1);
+        auto *factor0 = new AndFactor(0, {edge0, edge1}, 1.0);
+        var1->set_factor_vec({factor0});
+    } else if (world.rank() == 2) {
+        auto *var0 = new BinaryVariable(0, 0, 0.0);
+        auto *var2 = new BinaryVariable(2, 0, 0.0);
+        graph.owned_var_ptr_vec = {var2};
+        graph.cached_var_ptr_vec = {var0};
+        auto *edge2 = new IdentityEdge(2, var0);
+        auto *edge3 = new IdentityEdge(3, var2);
+        auto *factor1 = new AndFactor(1, {edge2, edge3}, 1.0);
+        var2->set_factor_vec({factor1});
     }
     while (num_samples--) {
         if (world.rank() == 0) { // master
-            var1_ptr->resample();
-            world.send(1, static_cast<int>(MessageType::VAR1_VAL), var1_ptr->get_value());
-            //world.send(1, static_cast<int>(MessageType::VAR_ID), var1_ptr->get_vid());
-            world.send(2, static_cast<int>(MessageType::VAR1_VAL), var1_ptr->get_value());
-            //world.send(2, static_cast<int>(MessageType::VAR_ID), var1_ptr->get_vid());
-            counter[1][var1_ptr->get_value()]++;
-            int var2_value = 0;
-            int var3_value = 0;
-            world.recv(1, static_cast<int>(MessageType::VAR2_VAL), var2_value);
-            var2_ptr->set_value(var2_value);
-            world.recv(2, static_cast<int>(MessageType::VAR3_VAL), var3_value);
-            var3_ptr->set_value(var3_value);
-            counter[2][var2_ptr->get_value()]++;
-            counter[3][var3_ptr->get_value()]++;
+            std::vector<int> val_vec(graph.owned_var_ptr_vec.size());
+            for (size_t i = 0; i < val_vec.size(); ++i) val_vec[i] = graph.owned_var_ptr_vec[i]->get_value();
+            for (auto worker_rank : workers_rank)
+                world.send(worker_rank, static_cast<int>(MsgType::M_Send_B), val_vec);
+            // master recieve the lastest variable values owned by workers;
+            for (int worker_rank : workers_rank) {
+                std::map<size_t, int> var_map;
+                world.recv(worker_rank, static_cast<int>(MsgType::W_Send_D), var_map);
+                for (auto &entry : var_map) {
+                    // TODO careful with the corresponding relationships
+                    const int shift = 1;
+                    graph.cached_var_ptr_vec[entry.first - shift]->set_value(entry.second);
+                }
+            }
+            // master resmaple the its owned variables
+            for (auto &var : graph.owned_var_ptr_vec) {
+                var->resample();
+                counter[var->get_vid()][var->get_value()]++;
+            }
         } else {
-            int var1_value = 0;
-            world.recv(0, static_cast<int>(MessageType::VAR1_VAL), var1_value);
-            var1_ptr->set_value(var1_value);
-            if (world.rank() == 1) {
-                var2_ptr->resample();
-                world.send(0, static_cast<int>(MessageType::VAR2_VAL), var2_ptr->get_value());
+            std::vector<int> val_vec(graph.cached_var_ptr_vec.size());
+            world.recv(master_rank, static_cast<int>(MsgType::M_Send_B), val_vec);
+            for (size_t i = 0; i < val_vec.size(); ++i) graph.cached_var_ptr_vec[i]->set_value(val_vec[i]);
+            // workers perform a sample for the variable they owned
+            for (auto &var : graph.owned_var_ptr_vec) {
+                var->resample();
+                counter[var->get_vid()][var->get_value()]++;
             }
-            if (world.rank() == 2) {
-                var3_ptr->resample();
-                world.send(0, static_cast<int>(MessageType::VAR3_VAL), var3_ptr->get_value());
+            // workers send the value of variables they owned to the master
+            std::map<size_t, int> var_map;
+            for (auto var : graph.owned_var_ptr_vec) {
+                var_map[var->get_vid()] = var->get_value();
             }
+            world.send(master_rank, static_cast<int>(MsgType::W_Send_D), var_map);
         }
+
     }
-    if (world.rank() == 0) {
-        for (auto &entry : counter) {
-            auto val_vec = entry.second;
-            for (size_t i = 0; i < val_vec.size(); ++i)
-                std::cout << "var: " << entry.first << "=" << i << " " << val_vec[i] << std::endl;
+    for (auto &entry : counter) {
+        for (int v = 0; v < 2; ++v) {
+            std::cout << "var: " << entry.first << " value: " << v << " count: " << entry.second[v] << std::endl;
         }
     }
 }

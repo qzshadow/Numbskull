@@ -68,6 +68,7 @@ int main() {
                 std::map<size_t, float> partial_factor_map = {};
                 world.recv(worker_rank, static_cast<int>(MsgType::W_Send_P_Fac), partial_factor_map);
                 for (auto& entry : partial_factor_map) {
+                    // TODO careful with the corresponding relationships
                     graph.partial_factor_ptr_vec[entry.first]->set_partial_val(entry.second);
                 }
             }
