@@ -2,8 +2,8 @@
 // The utility function used in this project
 //
 
-#ifndef CMAKE_BUILD_DEBUG_NUMBSKULL_UTILITY_H
-#define CMAKE_BUILD_DEBUG_NUMBSKULL_UTILITY_H
+#ifndef NUMBSKULL_UTILITY_H
+#define NUMBSKULL_UTILITY_H
 
 
 class Utility {
@@ -16,4 +16,4 @@ public:
 };
 
 
-#endif //CMAKE_BUILD_DEBUG_NUMBSKULL_UTILITY_H
+#endif //NUMBSKULL_UTILITY_H

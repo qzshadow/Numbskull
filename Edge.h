@@ -2,8 +2,8 @@
 // Created by zq32 on 3/4/18.
 //
 
-#ifndef CMAKE_BUILD_DEBUG_NUMBSKULL_EDGE_H
-#define CMAKE_BUILD_DEBUG_NUMBSKULL_EDGE_H
+#ifndef NUMBSKULL_EDGE_H
+#define NUMBSKULL_EDGE_H
 
 #include <cstddef>
 #include <cstdint>
@@ -43,4 +43,4 @@ public:
 
 };
 
-#endif //CMAKE_BUILD_DEBUG_NUMBSKULL_EDGE_H
+#endif //NUMBSKULL_EDGE_H
