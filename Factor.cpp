@@ -38,6 +38,7 @@ PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, f
         PatialFactor(fid, edge_ptr_vec, weight) {}
 
 float PatialAndFactor::eval() {
+    //std::cout<<_patial_val<<std::endl;
     bool res = _patial_val;
     for (auto &edge_ptr : *_edge_ptr_vec) {
         res = res && edge_ptr->transform();

@@ -15,7 +15,9 @@ void BinaryVariable::resample() {
             energy_vec[value] += factor_ptr->eval();
         }
     }
+    //std::cout<<"vid: "<<this->_vid<<", eng0: "<<energy_vec[0]<<", eng1: "<<energy_vec[1]<<std::endl;
     for (auto &energy : energy_vec) { energy = std::exp(energy); }
+
     _value = Utility::randomChoice(energy_vec);
 }
 

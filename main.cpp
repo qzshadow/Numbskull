@@ -18,16 +18,18 @@ int main() {
     mpi::communicator world;
     const int master_rank = 0;
     const std::vector<int> workers_rank = {1, 2};
-    size_t num_samples = 1000;
+    size_t num_samples = 10000;
 
     std::unordered_map<size_t, std::array<int, 2>> counter;
     FactorGraph graph;
     // construct the graph for three machine
     if (world.rank() == 0) { // master
         auto *var0 = new BinaryVariable(0, 0, 0.0);
+        auto *edge0 = new IdentityEdge(0, var0);
+        auto *edge2 = new IdentityEdge(2, var0);
         graph.owned_var_ptr_vec = {var0};
-        auto *partial_fac0 = new PatialAndFactor(0, {}, 1.0);
-        auto *partial_fac1 = new PatialAndFactor(1, {}, 1.0);
+        auto *partial_fac0 = new PatialAndFactor(0, {edge0}, 1.0);
+        auto *partial_fac1 = new PatialAndFactor(1, {edge2}, 1.0);
         graph.partial_factor_ptr_vec = {partial_fac0, partial_fac1};
         var0->set_factor_vec({partial_fac0, partial_fac1});
     } else if (world.rank() == 1) { // worker0
