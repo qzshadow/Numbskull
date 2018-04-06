@@ -9,5 +9,5 @@ add_executable(Numbskull
         Factor.cpp Factor.h
         Variable.cpp Variable.h
         FactorGraph.cpp FactorGraph.h
-        Utility.cpp Utility.h Edge.cpp Edge.h test/main.cpp)
+        Utility.cpp Utility.h Edge.cpp Edge.h main.cpp)
 target_link_libraries(Numbskull ${Boost_LIBRARIES})
