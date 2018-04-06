@@ -1,69 +1,46 @@
 # Numbskull
+A distributed Gibbs smapling framework
+Still developing...
 
-## Installation
-#### Ubuntu 14.04
-```sudo apt install libboost-all-dev cmake```
-
-This will install boost 1.54.0 and openmpi 1.6.5
-
-#### Ubuntu 16.04
-```sudo apt install libboost-all-dev cmake```
-
-This will install boost 1.58.0 and openmpi 1.10
-
-## Compile and Run
-### Use cmake
-**support cmake 3.5+**
+## Installation Dependency
+### Ubuntu 16.04
 ```bash
-mkdir cmake-build-debug
-cd cmake-build-debug
-cmake ..
-make
-mpirun -np 3 Numbskull
+sudo apt update
+sudo apt upgrade
+sudo apt install libboost-all-dev cmake
 ```
+These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
 
-### Use make (not recommend)
-```bash
-cd make-build-debug
-make run
+## Import the project to Clion
+1. Download Clion 2018.1 at https://www.jetbrains.com/clion/ and Install it
+
+2. In the "welcome to Clion" screen, choose "Check out from Version Control"
+Use the correct URL and login info to check the project to local
+
+3. After check out, you will open the project in the Clion editor
+
+4. Choose "File->Settings", search for "Toolchains", in the right panel, change C Compiler to "/usr/bin/mpicc", change C++ Compiler to "/usr/bin/mpic++", you do not need to change CMake and Debugger, using the Bundled is fine.
+
+5. Choose "Run->Edit Configurations", add a Application called Numbskull and configure is in the following ways:
+The working directory should be correspond the the ClionProjects on your machine.
+<img src="doc/configuration.png" width="800" />
+
+6. hit the green triangle button in the right top corner of the editor to run a BDC instance.
+
+7. to run BFD instance, change `main.cpp` to `test/main.cpp` in the CMakeLists.txt file the run again.
+
+8. The correct result for this graph will be count of var0 takes value 1 / value 0 = 0.78 / 0.22;
+count of var1 or var2 takes value 1 / value 0 = 0.68 / 0.32;
+
+## Debug
+Debug using multiple GDB instance:
+
+In a terminal, get into the folder contains runable "Numbskull", generally it will be located at "~/CLionProjects/Numbskull/cmake-build-debug", using the command
 ```
+mpirun -np 3 xterm -e gdb Numbskull
+```
+3 is the total machine number of master and workers
 
-## Input Format
-#### Factors
-|factor_id|assign|var_id|factor_type|weight|
-
-factor_id: long int, starts from 0
-
-assign: string (e.g. "D1" means the factor belongs to type 'D', assign to machine 1)
-
-var_id: long int, variable this factor connected to, starts from 0
-
-weight: double
-
-#### Variables
-|var_id|assign|init_val|factor_id|
-
-var_id: long int, starts from 0
-
-assign: string(e.g. "B0" means the factor belongs to type 'B', assigned to machine 0)
-
-init_val: int, categorical initial value for this variable
-
-factor_id: long int, factos this variable connected to, starts from 0
-
-
-#### GraphInfo
-|assign|var_start_idx|num_vars|fac_start_idx|num_factors|
-
-assign: string
-
-var_start_idx: long int, the start index of variable in this machine
-
-num_vars: long int, number of variables in this machine
-
-fac_start_idx: long int, the start index of factor in this machine
-
-num_facs: long int, number of factors in this machine
-
-## Topological picture of the input
-![alt text](Input/topo.png)
+## Other things helps you debug
+every time see error like "invaild world rank"
+check **Executable** in the run configuration (see the graph above), make sure it is **mpirun** rather than Numbskull.

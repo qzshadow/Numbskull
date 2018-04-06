@@ -5,46 +5,83 @@
 #ifndef NUMBSKULL_VARIABLE_H
 #define NUMBSKULL_VARIABLE_H
 
-#include <iostream>
-#include <boost/serialization/access.hpp>
-#include <boost/mpi/datatype.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
-#include <string>
 #include <vector>
+#include <cstddef>
+#include <memory>
 
+//#include "Factor.h"
+class Factor; // Forward declare Factor class to break out the circular include of Factor Edge and Variable
 class Variable {
 public:
+    // friend std::ostream &operator<<(std::ostream &os, const Variable &var);
     Variable() = default;
+    virtual void resample() = 0;
 
-    Variable(size_t _vid, std::string _assign, int _value, std::vector<size_t> _factors);
+    virtual int get_value() {};
 
-    Variable &operator=(Variable other);
+    virtual size_t get_vid() {};
 
-    friend std::ostream &operator<<(std::ostream &os, const Variable &var);
+    virtual void set_value(int value) {};
 
-    // variable id
-    size_t vid = SIZE_MAX;
-    // variable value
-    int value;
-    // assign info (e.g. "B0", variable type 'B', assign to machine 0)
-    std::string assign;
-    // factor id associated with this variable
-    std::vector<size_t> factors;
+    virtual void set_factor_vec(std::vector<Factor *>)= 0;
+};
 
-private:
-    friend class boost::serialization::access;
+class BinaryVariable : public Variable {
+public:
+    BinaryVariable() = default;
 
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version) {
-        ar & vid;
-        ar & value;
-        ar & assign;
-        ar & factors;
+    BinaryVariable(size_t vid, int value, float prior_energy);
+
+    BinaryVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+
+    void resample() override;
+
+    inline int get_value() override { return _value; }
+
+    inline void set_value(int value) override { _value = value; }
+
+    inline size_t get_vid() override { return _vid; }
+
+    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
+        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
     }
 
+
+private:
+    size_t _vid = SIZE_MAX;
+    int _value = 0;
+    float _prior_energy = 0.0;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
 };
-BOOST_IS_BITWISE_SERIALIZABLE(Variable)
+
+class MultinomialVariable : public Variable {
+public:
+    MultinomialVariable() = default;
+
+    MultinomialVariable(size_t vid, int value, float prior_energy);
+
+    MultinomialVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+
+    void resample() override;
+
+    inline int get_value() override { return _value; };
+
+    inline void set_value(int value) override { _value = value; }
+
+    inline size_t get_vid() override { return _vid; }
+
+    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
+        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
+    }
+
+
+private:
+    size_t _vid = SIZE_MAX;
+    unsigned int _domain_size = 0;
+    int _value = 0;
+    float _prior_energy = 0.0;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
+};
 
 
 #endif //NUMBSKULL_VARIABLE_H

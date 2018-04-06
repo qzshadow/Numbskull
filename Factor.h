@@ -5,52 +5,71 @@
 #ifndef NUMBSKULL_FACTOR_H
 #define NUMBSKULL_FACTOR_H
 
-#include <climits>
+#include "Edge.h"
+#include <cstddef>
 #include <vector>
-#include <string>
-#include <iostream>
-#include <boost/serialization/access.hpp>
-#include <boost/mpi/datatype.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
-
 
 class Factor {
 public:
+    Factor() = default;
 
-    Factor(size_t _fid, const std::string &_assign, const std::vector<size_t> &_variables,
-           const std::string &_type, double _weight);
+    Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 
-    Factor &operator=(Factor other);
+    virtual float eval() = 0;
 
-    friend std::ostream&operator<<(std::ostream&, const Factor& fac);
+    virtual float partial_eval(std::vector<Variable *> &) {};
 
-    Factor();
+    size_t get_fid() { return _fid; }
 
-    // factor id
-    size_t fid = SIZE_MAX;
-    // factor assign (e.g. "D1", factor type 'D', assigned to machine 1)
-    std::string assign;
-    // variable ids associated to this factor
-    std::vector<size_t> variables;
-    // type of this factor (e.g. "EQU")
-    std::string type; // operator
-    // weight of this factor
-    double weight;
-private:
-    friend class boost::serialization::access;
-
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int version_num) {
-        ar & fid;
-        ar & assign;
-        ar & variables;
-        ar & type;
-        ar & weight;
-    }
+protected:
+    size_t _fid = SIZE_MAX;
+    std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec;
+    float _weight = 1.0;
 };
 
-BOOST_IS_BITWISE_SERIALIZABLE(Factor)
+class PatialFactor : public Factor {
+public:
+    PatialFactor() = default;
+
+    PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+
+    virtual float eval() = 0;
+
+    void set_partial_val(float partial_val) { _patial_val = partial_val; }
+
+protected:
+    float _patial_val = 0.0;
+
+};
+
+
+class AndFactor : public Factor{
+public:
+    AndFactor() = default;
+
+    AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+
+    float eval() override;
+
+    float partial_eval(std::vector<Variable *> &) override;
+};
+
+class PatialAndFactor : public PatialFactor {
+public:
+    PatialAndFactor() = default;
+
+    PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+
+    float eval() override;
+};
+
+//class EqualFactor : public Factor {
+//public:
+//    EqualFactor() = default;
+//
+//    EqualFactor(std::vector<Edge *> edge_ptr_vec, float weight);
+//    float eval() override ;
+//};
 
 
 #endif //NUMBSKULL_FACTOR_H

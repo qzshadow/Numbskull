@@ -1,24 +1,65 @@
+#include <algorithm>
+#include <iostream>
 #include "Variable.h"
+#include "Factor.h"
+#include "Utility.h"
 
-Variable::Variable(size_t _vid, std::string _assign, int _value, std::vector<size_t> _factors) :
-        vid(_vid),
-        assign(_assign),
-        factors(_factors),
-        value(_value) {}
 
-Variable &Variable::operator=(Variable other) {
-    vid = other.vid;
-    assign = other.assign;
-    factors = other.factors;
-    value = other.value;
-    return *this;
+void BinaryVariable::resample() {
+    //std::cout<<"resample called"<<std::endl;
+    std::vector<float> energy_vec(2);
+    // std::cout << _factor_ptr_vec->size() << std::endl;
+    for (auto &factor_ptr : *_factor_ptr_vec) {
+        for (int value = 0; value < 2; ++value) {
+            _value = value;
+            energy_vec[value] += factor_ptr->eval();
+        }
+    }
+    //std::cout<<"vid: "<<this->_vid<<", eng0: "<<energy_vec[0]<<", eng1: "<<energy_vec[1]<<std::endl;
+    for (auto &energy : energy_vec) { energy = std::exp(energy); }
+
+    _value = Utility::randomChoice(energy_vec);
 }
 
-std::ostream &operator<<(std::ostream &os, const Variable &var) {
-    os << var.vid << std::ends << var.assign << std::ends << "[" << std::ends;
-    for (auto fac : var.factors) os << fac << std::ends;
-    os << "]" << std::ends << var.value << std::endl;
-    return os;
+BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec) :
+        _vid(vid), _value(value), _prior_energy(prior_energy),
+        _factor_ptr_vec(std::make_unique<std::vector<Factor *>>(factor_ptr_vec)) {
+
 }
 
-//Variable::Variable() = default;
+BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy) :
+        BinaryVariable(vid, value, prior_energy, std::vector<Factor *>()) {
+
+}
+
+//BinaryVariable::BinaryVariable(bool val, float prior_energy, size_t fid_begin_idx, size_t fid_size) :
+//        _value(val), _prior_energy(prior_energy), _fid_begin_idx(fid_begin_idx), _fid_size(fid_size){
+//}
+
+void MultinomialVariable::resample() {
+    std::vector<float> energy_vec(_domain_size);
+    for (auto &factor_ptr : *_factor_ptr_vec) {
+        for (int value = 0; value < _domain_size; ++value) {
+            _value = value;
+            energy_vec[value] += factor_ptr->eval();
+        }
+    }
+    for (auto &energy : energy_vec) { energy = std::exp(energy); }
+    _value = Utility::randomChoice(energy_vec);
+
+}
+
+MultinomialVariable::MultinomialVariable(size_t vid, int value, float prior_energy,
+                                         std::vector<Factor *> factor_ptr_vec) :
+        _vid(vid), _value(value), _prior_energy(prior_energy),
+        _factor_ptr_vec(std::make_unique<std::vector<Factor *>>(factor_ptr_vec)) {
+
+}
+
+MultinomialVariable::MultinomialVariable(size_t vid, int value, float prior_energy) :
+        MultinomialVariable(vid, value, prior_energy, std::vector<Factor *>()) {}
+
+
+//MultinomialVariable::MultinomialVariable(bool val, float prior_energy, size_t fid_begin_idx, size_t fid_size) :
+//        _value(val), _prior_energy(prior_energy) , _fid_begin_idx(fid_begin_idx), _fid_size(fid_size){
+//}
