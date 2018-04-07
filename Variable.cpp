@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 #include "Variable.h"
 #include "Factor.h"
 #include "Utility.h"
