@@ -1,5 +1,6 @@
 # Numbskull
-A distributed Gibbs smapling framework
+A distributed Gibbs sampling framework
+
 Still developing...
 
 ## Installation Dependency
@@ -12,17 +13,17 @@ sudo apt install libboost-all-dev cmake
 These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
 
 ## Import the project to Clion
-1. Download Clion 2018.1 at https://www.jetbrains.com/clion/ and Install it
+1. Download Clion 2018.1 at https://www.jetbrains.com/clion/ and install it
 
 2. In the "welcome to Clion" screen, choose "Check out from Version Control"
-Use the correct URL and login info to check the project to local
+Use the correct URL and login info to check the project to local machine
 
-3. After check out, you will open the project in the Clion editor
+3. After checking out, you will open the project in the Clion editor
 
 4. Choose "File->Settings", search for "Toolchains", in the right panel, change C Compiler to "/usr/bin/mpicc", change C++ Compiler to "/usr/bin/mpic++", you do not need to change CMake and Debugger, using the Bundled is fine.
 
 5. Choose "Run->Edit Configurations", add a Application called Numbskull and configure is in the following ways:
-The working directory should be correspond the the ClionProjects on your machine.
+The working directory should correspond to the the ClionProjects folder on your machine.
 <img src="doc/configuration.png" width="800" />
 
 6. hit the green triangle button in the right top corner of the editor to run a BDC instance.
