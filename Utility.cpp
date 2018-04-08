@@ -3,6 +3,7 @@
 //
 
 #include "FactorGraph.h"
+#include <random>
 #include <boost/mpi/communicator.hpp>
 #include "Utility.h"
 
