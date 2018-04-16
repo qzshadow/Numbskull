@@ -17,12 +17,12 @@
 
 class FactorGraph {
 public:
-    std::unordered_map<std::string, std::vector<Factor *>> owned_factor_ptr_vec;
-    std::unordered_map<std::string, std::vector<Factor *>> cached_factor_ptr_vec;
-    std::unordered_map<std::string, std::vector<PatialFactor *>> partial_factor_ptr_vec;
+    std::unordered_map<std::string, std::vector<Factor *>> factor_ptr_map;
+    //std::unordered_map<std::string, std::vector<Factor *>> cached_factor_ptr_map;
+    std::unordered_map<std::string, std::vector<PatialFactor *>> partial_factor_ptr_map;
 
-    std::unordered_map<std::string, std::vector<Variable *>> owned_var_ptr_vec;
-    std::unordered_map<std::string, std::vector<Variable *>> cached_var_ptr_vec;
+    std::unordered_map<std::string, std::vector<Variable *>> var_ptr_map;
+    //std::unordered_map<std::string, std::vector<Variable *>> cached_var_ptr_map;
 };
 
 
