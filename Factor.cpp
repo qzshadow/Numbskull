@@ -3,9 +3,15 @@
 #include <algorithm>
 
 Factor::Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
+        Factor::Factor(fid, edge_ptr_vec, weight, "") {
+}
+
+Factor::Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) :
         _fid(fid),
         _edge_ptr_vec(std::make_unique<std::vector<Edge *>>(edge_ptr_vec)),
-        _weight(weight) {
+        _weight(weight),
+        _assign(assign) {
+
 }
 
 float AndFactor::eval() {
@@ -21,17 +27,23 @@ float AndFactor::eval() {
 AndFactor::AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
         Factor(fid, edge_ptr_vec, weight) {}
 
-float AndFactor::partial_eval(std::vector<Variable *> &owned_var_ptr_vec) {
+float AndFactor::partial_eval() {
     bool partial_res = true;
     for (auto &edge_ptr : *_edge_ptr_vec) {
         Variable *var_ptr = edge_ptr->get_var();
-        // TODO optimize the complexity
-        if (std::find(owned_var_ptr_vec.begin(), owned_var_ptr_vec.end(), var_ptr)
-            != owned_var_ptr_vec.end()) { // the variable is owned by this machine
+        if (var_ptr->get_assign() == "C") { // the variable is owned by this machine
             partial_res = partial_res && edge_ptr->transform();
         }
     }
     return partial_res;
+}
+
+AndFactor::AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) :
+        Factor(fid,
+               edge_ptr_vec,
+               weight,
+               assign) {
+
 }
 
 PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
@@ -47,5 +59,17 @@ float PatialAndFactor::eval() {
     return res * _weight;
 }
 
+PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign)
+        : PatialFactor(fid, edge_ptr_vec, weight, assign) {
+
+}
+
 PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
         Factor(fid, edge_ptr_vec, weight) {}
+
+PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) : Factor(fid,
+                                                                                                                    edge_ptr_vec,
+                                                                                                                    weight,
+                                                                                                                    assign) {
+
+}

@@ -15,9 +15,12 @@ public:
 
     Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 
+    Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
+
+
     virtual float eval() = 0;
 
-    virtual float partial_eval(std::vector<Variable *> &) {};
+    virtual float partial_eval() {};
 
     size_t get_fid() { return _fid; }
 
@@ -25,11 +28,14 @@ protected:
     size_t _fid = SIZE_MAX;
     std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec;
     float _weight = 1.0;
+    std::string _assign;
 };
 
 class PatialFactor : public Factor {
 public:
     PatialFactor() = default;
+
+    PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
 
     PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 
@@ -47,29 +53,25 @@ class AndFactor : public Factor{
 public:
     AndFactor() = default;
 
-    AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+    AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
 
     float eval() override;
 
-    float partial_eval(std::vector<Variable *> &) override;
+    float partial_eval() override;
+
+private:
+    AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 };
 
 class PatialAndFactor : public PatialFactor {
 public:
     PatialAndFactor() = default;
-
-    PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
-
+    PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
     float eval() override;
-};
 
-//class EqualFactor : public Factor {
-//public:
-//    EqualFactor() = default;
-//
-//    EqualFactor(std::vector<Edge *> edge_ptr_vec, float weight);
-//    float eval() override ;
-//};
+private:
+    PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+};
 
 
 #endif //NUMBSKULL_FACTOR_H

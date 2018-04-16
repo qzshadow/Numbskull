@@ -13,7 +13,7 @@ class Edge {
 public:
     Edge() = default;
 
-    Edge(size_t eid, Variable *var);
+    Edge(size_t eid, Variable *var, std::string assign);
     virtual float transform() = 0;
 
     Variable *get_var() const {
@@ -23,6 +23,7 @@ public:
 protected:
     Variable *_var = nullptr;
     size_t _eid = SIZE_MAX;
+    std::string _assign;
 };
 
 class NegateEdge : public Edge {
@@ -30,7 +31,7 @@ public:
     NegateEdge() = default;
     float transform() override;
 
-    NegateEdge(size_t eid, Variable *var);
+    NegateEdge(size_t eid, Variable *var, std::string assign);
 
 };
 
@@ -38,7 +39,7 @@ class IdentityEdge : public Edge {
 public:
     IdentityEdge() = default;
 
-    IdentityEdge(size_t eid, Variable *var);
+    IdentityEdge(size_t eid, Variable *var, std::string assign);
     float transform() override;
 
 };

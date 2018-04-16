@@ -14,73 +14,59 @@ class Factor; // Forward declare Factor class to break out the circular include 
 class Variable {
 public:
     // friend std::ostream &operator<<(std::ostream &os, const Variable &var);
-    Variable() = default;
     virtual void resample() = 0;
 
-    virtual int get_value() {};
+    inline int get_value() {return _value;};
 
-    virtual size_t get_vid() {};
+    inline std::string get_assign() {return _assign;}
 
-    virtual void set_value(int value) {};
+    inline size_t get_vid() {return _vid;};
 
-    virtual void set_factor_vec(std::vector<Factor *>)= 0;
+    inline void set_value(int value) {_value = value;};
+
+    inline void set_factor_vec(std::vector<Factor *> fac_vec) {_factor_ptr_vec = std::make_unique<std::vector<Factor*>>(fac_vec);};
+
+protected:
+    size_t _vid = SIZE_MAX;
+    int _value = 0;
+    float _prior_energy = 0.0;
+    std::string _assign;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
+
+    Variable() = default;
+    Variable(size_t vid, int value, float prior_energy, std::string assign);
+    Variable(size_t vid, int value, float prior_energy, std::string assign, std::vector<Factor *> factor_ptr_vec);
+
 };
 
 class BinaryVariable : public Variable {
 public:
     BinaryVariable() = default;
 
-    BinaryVariable(size_t vid, int value, float prior_energy);
+    BinaryVariable(size_t vid, int value, float prior_energy, std::string assign);
 
-    BinaryVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+    BinaryVariable(size_t vid, int value, float prior_energy, std::string assign, std::vector<Factor *> factor_ptr_vec);
 
     void resample() override;
 
-    inline int get_value() override { return _value; }
-
-    inline void set_value(int value) override { _value = value; }
-
-    inline size_t get_vid() override { return _vid; }
-
-    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
-        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
-    }
-
 
 private:
-    size_t _vid = SIZE_MAX;
-    int _value = 0;
-    float _prior_energy = 0.0;
-    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
 };
 
 class MultinomialVariable : public Variable {
 public:
     MultinomialVariable() = default;
 
-    MultinomialVariable(size_t vid, int value, float prior_energy);
+    MultinomialVariable(size_t vid, int value, unsigned int domain_size, float prior_energy, std::string assign);
 
-    MultinomialVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec);
+    MultinomialVariable(size_t vid, int value, unsigned int domain_size, float prior_energy, std::string assign, std::vector<Factor *> factor_ptr_vec);
 
     void resample() override;
 
-    inline int get_value() override { return _value; };
-
-    inline void set_value(int value) override { _value = value; }
-
-    inline size_t get_vid() override { return _vid; }
-
-    inline void set_factor_vec(std::vector<Factor *> fac_vec) override {
-        _factor_ptr_vec = std::make_unique<std::vector<Factor *>>(fac_vec);
-    }
 
 
 private:
-    size_t _vid = SIZE_MAX;
     unsigned int _domain_size = 0;
-    int _value = 0;
-    float _prior_energy = 0.0;
-    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
 };
 
 

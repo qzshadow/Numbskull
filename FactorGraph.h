@@ -17,15 +17,12 @@
 
 class FactorGraph {
 public:
-    // std::vector<Edge *> owned_edge_ptr_vec;
-    // std::vector<Edge *> cached_edge_ptr_vec;
+    std::unordered_map<std::string, std::vector<Factor *>> owned_factor_ptr_vec;
+    std::unordered_map<std::string, std::vector<Factor *>> cached_factor_ptr_vec;
+    std::unordered_map<std::string, std::vector<PatialFactor *>> partial_factor_ptr_vec;
 
-    std::vector<Factor *> owned_factor_ptr_vec;
-    std::vector<Factor *> cached_factor_ptr_vec;
-    std::vector<PatialFactor *> partial_factor_ptr_vec;
-
-    std::vector<Variable *> owned_var_ptr_vec;
-    std::vector<Variable *> cached_var_ptr_vec;
+    std::unordered_map<std::string, std::vector<Variable *>> owned_var_ptr_vec;
+    std::unordered_map<std::string, std::vector<Variable *>> cached_var_ptr_vec;
 };
 
 

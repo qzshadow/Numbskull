@@ -10,8 +10,8 @@ float NegateEdge::transform() {
     return -_var->get_value();
 }
 
-NegateEdge::NegateEdge(size_t eid, Variable *var) :
-        Edge(eid, var) {
+NegateEdge::NegateEdge(size_t eid, Variable *var, std::string assign) :
+        Edge(eid, var, assign) {
 
 }
 
@@ -21,11 +21,11 @@ float IdentityEdge::transform() {
     return _var->get_value();
 }
 
-IdentityEdge::IdentityEdge(size_t eid, Variable *var) :
-        Edge(eid, var) {
+IdentityEdge::IdentityEdge(size_t eid, Variable *var, std::string assign) :
+        Edge(eid, var, assign) {
 
 }
 
-Edge::Edge(size_t eid, Variable *var) : _var(var), _eid(eid) {
+Edge::Edge(size_t eid, Variable *var, std::string assign) : _var(var), _eid(eid), _assign(assign){
 
 }

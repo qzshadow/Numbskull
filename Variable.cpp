@@ -22,20 +22,17 @@ void BinaryVariable::resample() {
     _value = Utility::randomChoice(energy_vec);
 }
 
-BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy, std::vector<Factor *> factor_ptr_vec) :
-        _vid(vid), _value(value), _prior_energy(prior_energy),
-        _factor_ptr_vec(std::make_unique<std::vector<Factor *>>(factor_ptr_vec)) {
+BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy, std::string assign,
+                               std::vector<Factor *> factor_ptr_vec) :
+        Variable(vid, value, prior_energy, assign, factor_ptr_vec) {
 
 }
 
-BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy) :
-        BinaryVariable(vid, value, prior_energy, std::vector<Factor *>()) {
+BinaryVariable::BinaryVariable(size_t vid, int value, float prior_energy, std::string assign) :
+        Variable(vid, value, prior_energy, assign, std::vector<Factor *>()) {
 
 }
 
-//BinaryVariable::BinaryVariable(bool val, float prior_energy, size_t fid_begin_idx, size_t fid_size) :
-//        _value(val), _prior_energy(prior_energy), _fid_begin_idx(fid_begin_idx), _fid_size(fid_size){
-//}
 
 void MultinomialVariable::resample() {
     std::vector<float> energy_vec(_domain_size);
@@ -50,17 +47,31 @@ void MultinomialVariable::resample() {
 
 }
 
-MultinomialVariable::MultinomialVariable(size_t vid, int value, float prior_energy,
+MultinomialVariable::MultinomialVariable(size_t vid, int value, unsigned int domain_size, float prior_energy,
+                                         std::string assign,
                                          std::vector<Factor *> factor_ptr_vec) :
-        _vid(vid), _value(value), _prior_energy(prior_energy),
+        Variable(vid, value, prior_energy, assign, factor_ptr_vec) {
+    _domain_size = domain_size;
+}
+
+MultinomialVariable::MultinomialVariable(size_t vid, int value, unsigned int domain_size, float prior_energy,
+                                         std::string assign) :
+        Variable(vid, value, prior_energy, assign, std::vector<Factor *>()) {
+    _domain_size = domain_size;
+}
+
+
+Variable::Variable(size_t vid, int value, float prior_energy, std::string assign,
+                   std::vector<Factor *> factor_ptr_vec) :
+        _vid(vid),
+        _value(value),
+        _prior_energy(prior_energy),
+        _assign(assign),
         _factor_ptr_vec(std::make_unique<std::vector<Factor *>>(factor_ptr_vec)) {
 
 }
 
-MultinomialVariable::MultinomialVariable(size_t vid, int value, float prior_energy) :
-        MultinomialVariable(vid, value, prior_energy, std::vector<Factor *>()) {}
+Variable::Variable(size_t vid, int value, float prior_energy, std::string assign) :
+        Variable(vid, value, prior_energy, assign, std::vector<Factor *>()) {
 
-
-//MultinomialVariable::MultinomialVariable(bool val, float prior_energy, size_t fid_begin_idx, size_t fid_size) :
-//        _value(val), _prior_energy(prior_energy) , _fid_begin_idx(fid_begin_idx), _fid_size(fid_size){
-//}
+}
