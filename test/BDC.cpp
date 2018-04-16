@@ -6,7 +6,7 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
-#include "FactorGraph.h"
+#include "../FactorGraph.h"
 
 namespace mpi = boost::mpi;
 enum class MsgType {
