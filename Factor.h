@@ -8,6 +8,7 @@
 #include "Edge.h"
 #include <cstddef>
 #include <vector>
+#include <unordered_set>
 
 class Factor {
 public:
@@ -20,7 +21,7 @@ public:
 
     virtual float eval() = 0;
 
-    virtual float partial_eval() {};
+    virtual float partial_eval(std::unordered_set<std::string>) {};
 
     size_t get_fid() { return _fid; }
 
@@ -57,7 +58,7 @@ public:
 
     float eval() override;
 
-    float partial_eval() override;
+    float partial_eval(std::unordered_set<std::string>) override;
 
 private:
     AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);

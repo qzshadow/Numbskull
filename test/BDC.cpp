@@ -59,7 +59,7 @@ int main() {
 
     while (num_samples--) {
         if (world.rank() == master_rank) { // master
-            // for B variable values vector, then send B variables values to workers
+            // form B variable values vector, then send B variables values to workers
             std::vector<int> val_vec(graph.var_ptr_map["B"].size());
             for (size_t i = 0; i < val_vec.size(); ++i) val_vec[i] = graph.var_ptr_map["B"][i]->get_value();
             for (auto worker_rank : workers_rank)
@@ -94,7 +94,7 @@ int main() {
 
             std::vector<float> partial_factor_vec(graph.factor_ptr_map["D"].size());
             for (size_t i = 0; i < partial_factor_vec.size(); ++i) {
-                partial_factor_vec[i] = graph.factor_ptr_map["D"][i]->partial_eval();
+                partial_factor_vec[i] = graph.factor_ptr_map["D"][i]->partial_eval({"C"});
             }
 
             // then transform the partial (reduced) factors to master

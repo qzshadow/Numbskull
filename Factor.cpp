@@ -27,11 +27,11 @@ float AndFactor::eval() {
 AndFactor::AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
         Factor(fid, edge_ptr_vec, weight) {}
 
-float AndFactor::partial_eval() {
+float AndFactor::partial_eval(std::unordered_set<std::string> own_var_set) {
     bool partial_res = true;
     for (auto &edge_ptr : *_edge_ptr_vec) {
         Variable *var_ptr = edge_ptr->get_var();
-        if (var_ptr->get_assign() == "C") { // the variable is owned by this machine
+        if (own_var_set.count(var_ptr->get_assign())) { // the variable is owned by this machine
             partial_res = partial_res && edge_ptr->transform();
         }
     }
