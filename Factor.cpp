@@ -35,6 +35,7 @@ float AndFactor::partial_eval(std::unordered_set<std::string> own_var_set) {
             partial_res = partial_res && edge_ptr->transform();
         }
     }
+
     return partial_res;
 }
 
@@ -47,7 +48,9 @@ AndFactor::AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight,
 }
 
 PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
-        PatialFactor(fid, edge_ptr_vec, weight) {}
+        PatialFactor(fid, edge_ptr_vec, weight),
+        AndFactor(fid, edge_ptr_vec, weight),
+    Factor(fid, edge_ptr_vec, weight){}
 
 float PatialAndFactor::eval() {
     //std::cout<<_patial_val<<std::endl;
@@ -60,16 +63,14 @@ float PatialAndFactor::eval() {
 }
 
 PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign)
-        : PatialFactor(fid, edge_ptr_vec, weight, assign) {
+        : PatialFactor(fid, edge_ptr_vec, weight, assign),
+            AndFactor(fid, edge_ptr_vec, weight, assign),
+            Factor(fid, edge_ptr_vec, weight, assign){
 
 }
 
 PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
         Factor(fid, edge_ptr_vec, weight) {}
 
-PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) : Factor(fid,
-                                                                                                                    edge_ptr_vec,
-                                                                                                                    weight,
-                                                                                                                    assign) {
-
-}
+PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) :
+        Factor(fid, edge_ptr_vec,weight, assign) {}

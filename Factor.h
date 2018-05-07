@@ -32,7 +32,7 @@ protected:
     std::string _assign;
 };
 
-class PatialFactor : public Factor {
+class PatialFactor : virtual public Factor {
 public:
     PatialFactor() = default;
 
@@ -40,7 +40,7 @@ public:
 
     PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 
-    virtual float eval() = 0;
+    //virtual float eval() = 0;
 
     void set_partial_val(float partial_val) { _patial_val = partial_val; }
 
@@ -50,7 +50,7 @@ protected:
 };
 
 
-class AndFactor : public Factor{
+class AndFactor : virtual public Factor{
 public:
     AndFactor() = default;
 
@@ -60,11 +60,14 @@ public:
 
     float partial_eval(std::unordered_set<std::string>) override;
 
+protected:
+AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
 private:
-    AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight);
+    //float eval() override;
+
 };
 
-class PatialAndFactor : public PatialFactor {
+class PatialAndFactor : public PatialFactor, public AndFactor {
 public:
     PatialAndFactor() = default;
     PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
