@@ -26,12 +26,17 @@ Use the correct URL and login info to check the project to local machine
 The working directory should correspond to the the ClionProjects folder on your machine.
 <img src="doc/configuration.png" width="800" />
 
-6. hit the green triangle button in the right top corner of the editor to run a BDC instance.
+6. we provide four diffient instance to test the framework, they are:
+    1. BDC graph
+    2. BFD graph
+    3. AGC graph
+    4. AED graph
+    
+   to test any of them, you need to change the included source file in the `CMakeList.txt` file (e.g. from `test/BDC.cpp` to `test/BFD.cpp`), then hit the green triangle button in the right top corner of the editor to run a BFD instance.
 
-7. to run BFD instance, change `main.cpp` to `test/main.cpp` in the CMakeLists.txt file the run again.
-
-8. The correct result for this graph will be count of var0 takes value 1 / value 0 = 0.78 / 0.22;
+7. For BDC, BFD, AED instance, the correct result for this graph will be count of var0 takes value 1 / value 0 = 0.78 / 0.22;
 count of var1 or var2 takes value 1 / value 0 = 0.68 / 0.32;
+
 
 ## Debug
 Debug using multiple GDB instance:
