@@ -12,6 +12,7 @@
 class Edge {
 public:
     Edge() = default;
+    virtual ~Edge() = default;
 
     Edge(size_t eid, Variable *var, std::string assign);
     virtual float transform() = 0;

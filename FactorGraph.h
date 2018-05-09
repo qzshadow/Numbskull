@@ -45,6 +45,19 @@ public:
     mpi::environment env;
     mpi::communicator world;
 
+    ~FactorGraph() {
+        for (auto& entry : factor_ptr_map) {
+            for (Factor* ptr : entry.second) delete ptr;
+        }
+
+        for (auto& entry : partial_factor_ptr_map) {
+            for (PatialFactor* ptr : entry.second) delete ptr;
+        }
+
+        for (auto& entry : var_ptr_map) {
+            for (Variable * ptr : entry.second) delete ptr;
+        }
+    }
 
 };
 

@@ -15,6 +15,7 @@ class Variable {
 public:
     // friend std::ostream &operator<<(std::ostream &os, const Variable &var);
     virtual void resample() = 0;
+    virtual ~Variable() = default;
 
     inline int get_value() {return _value;};
 

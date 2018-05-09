@@ -18,6 +18,8 @@ public:
 
     Factor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign);
 
+    virtual ~Factor() = default;
+
 
     virtual float eval() = 0;
 
