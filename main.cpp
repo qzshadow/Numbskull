@@ -12,7 +12,7 @@ int main() {
     size_t num_samples = 10000;
 
     FactorGraph graph;
-    graph.generate_BDC_instance();
+    graph.generate_AED_instance();
     graph.resample(num_samples, master_rank, workers_rank);
 
 }
