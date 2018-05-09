@@ -33,7 +33,7 @@ public:
     void generate_AED_instance();
     void generate_BFD_instance();
 
-    void resample(size_t num_samples, int master_rank, std::vector<int> workers_rank);
+    void gibbs(size_t num_samples, int master_rank, std::vector<int> workers_rank);
 public:
     std::unordered_map<std::string, std::vector<Factor *>> factor_ptr_map;
     //std::unordered_map<std::string, std::vector<Factor *>> cached_factor_ptr_map;

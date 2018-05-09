@@ -4,7 +4,7 @@
 #include "FactorGraph.h"
 
 
-void FactorGraph::resample(size_t num_samples, const int master_rank, const std::vector<int> workers_rank) {
+void FactorGraph::gibbs(size_t num_samples, int master_rank, std::vector<int> workers_rank) {
     std::unordered_map<size_t, std::array<int, 2>> counter;
     while (num_samples--) {
         if (world.rank() == master_rank) { // master
@@ -29,7 +29,16 @@ void FactorGraph::resample(size_t num_samples, const int master_rank, const std:
                 }
             }
             // Master computes partial evaluation of G_i-key factors, and transmits them to worker i
-            // TODO
+            for (auto worker_rank : workers_rank) {
+                std::string key = "G" + std::to_string(worker_rank);
+                if (partial_factor_ptr_map.count(key)) {
+                    size_t G_pf_size = partial_factor_ptr_map[key].size();
+                    std::vector<float> G_pf_val_vec(G_pf_size);
+                    for (auto i = 0; i < G_pf_size; ++i)
+                        G_pf_val_vec[i] = partial_factor_ptr_map[key][i]->partial_eval({"A", "B"});
+                    world.send(worker_rank, static_cast<int>(MsgType::M_Send_P_G), G_pf_val_vec);
+                }
+            }
 
             /********************* Master receive transmissions from workers ********************/
             // Master receive D_i variable from worker i, update its cache
@@ -56,7 +65,17 @@ void FactorGraph::resample(size_t num_samples, const int master_rank, const std:
 
             }
             // Master receive G_i-key partial factor values from worker i, update its cache
-            // TODO
+            for (auto worker_rank : workers_rank) {
+                std::string key = "G" + std::to_string(worker_rank);
+                if (partial_factor_ptr_map.count(key)) {
+                    std::vector<float> G_pf_vec;
+                    world.recv(worker_rank, static_cast<int>(MsgType::W_Send_P_G), G_pf_vec);
+                    assert(G_pf_vec.size() == partial_factor_ptr_map[key].size());
+                    for (auto i = 0; i < G_pf_vec.size(); ++i)
+                        partial_factor_ptr_map[key][i]->set_partial_val(G_pf_vec[i]);
+                }
+
+            }
 
 
             /******************** Master perform Gibbs sampling on the variables it owns *******/
@@ -93,7 +112,13 @@ void FactorGraph::resample(size_t num_samples, const int master_rank, const std:
                     partial_factor_ptr_map["E"][i]->set_partial_val(E_pf_val_vec[i]);
             }
             // Worker receive G partial factor values from master, update cached assignment
-            // TODO
+            if (partial_factor_ptr_map.count("G")) {
+                std::vector<float> G_pf_vec;
+                world.recv(master_rank, static_cast<int>(MsgType::M_Send_P_G), G_pf_vec);
+                assert(G_pf_vec.size() == partial_factor_ptr_map["G"].size());
+                for (auto i = 0; i < G_pf_vec.size(); ++i)
+                    partial_factor_ptr_map["G"][i]->set_partial_val(G_pf_vec[i]);
+            }
 
             /*********** Worker performs Gibbs sampling on the variable it owns *************/
             // Worker runs a single pass of Gibbs sampling on the C variables it owns
@@ -129,7 +154,14 @@ void FactorGraph::resample(size_t num_samples, const int master_rank, const std:
                 world.send(master_rank, static_cast<int>(MsgType::W_Send_P_D), D_pf_vec);
             }
             // Worker computes partial evaluation of all G_i-key factors, and transmits them to master
-            // TODO
+            if (partial_factor_ptr_map.count("G")) {
+                size_t G_pf_size = partial_factor_ptr_map["G"].size();
+                std::vector<float> G_pf_vec(G_pf_size);
+                for (auto i = 0; i < G_pf_size; ++i) {
+                    G_pf_vec[i] = partial_factor_ptr_map["G"][i]->partial_eval({"C", "D"});
+                }
+                world.send(master_rank, static_cast<int>(MsgType::W_Send_P_G), G_pf_vec);
+            }
 
         }
 

@@ -12,7 +12,8 @@ int main() {
     size_t num_samples = 10000;
 
     FactorGraph graph;
-    graph.generate_AED_instance();
-    graph.resample(num_samples, master_rank, workers_rank);
+    // graph.generate_AED_instance();
+    graph.generate_AGC_instance();
+    graph.gibbs(num_samples, master_rank, workers_rank);
 
 }
