@@ -169,10 +169,48 @@ void FactorGraph::gibbs(size_t num_samples, int master_rank, std::vector<int> wo
     /****************** statistics *****************************************************/
     for (auto &entry : counter) {
         for (int v = 0; v < 2; ++v)
-            std::cout << "var: " << entry.first << " value: " << v << " count: " << entry.second[v] << std::endl;
+            std::cout << "machine#"<< world.rank()<<" var: " << entry.first << " value: " << v << " count: " << entry.second[v] << std::endl;
     }
 }
-
+void FactorGraph::gen_BDC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor) {
+    if (world.rank() == 0) {
+        for (auto vid = 0; vid < var_num_on_master; ++vid) {
+            auto* var = new BinaryVariable(vid, 0, 0.0, "B");
+            var_ptr_map["B"].push_back(var);
+            for (auto w = 0; w < worker_nums; ++w) {
+                std::string worker_assign = "D" + std::to_string(w + 1);
+                for (auto fac_idx = 0; fac_idx < factor_num_per_worker; ++fac_idx) {
+                    auto pfid = w * worker_nums + fac_idx;
+                    auto *edge = new IdentityEdge(pfid, var, "U");
+                    auto *partial_fac = new PatialAndFactor(pfid, {edge}, 1.0, worker_assign);
+                    partial_factor_ptr_map[worker_assign].push_back(partial_fac);
+                    var->add_factor(partial_fac);
+                }
+            }
+        }
+    } else {
+        int worker_rank = world.rank();
+        std::vector<Edge* > B_var_edges;
+        size_t vid = 0;
+        for (; vid < var_num_on_master; ++vid) {
+            auto* var = new BinaryVariable(vid, 0, 0.0, "B");
+            var_ptr_map["B"].push_back(var);
+            auto* edge = new IdentityEdge(vid, var, "U");
+            B_var_edges.push_back(edge);
+        }
+        for (auto fid = 0; fid < factor_num_per_worker; fid++) {
+            auto* factor = new AndFactor(fid, B_var_edges, 1.0, "D");
+            for (; vid < var_num_on_master + (fid + 1) * var_num_per_factor; vid++) {
+                auto* var = new BinaryVariable(vid, 0, 0.0, "C");
+                var_ptr_map["C"].push_back(var);
+                var->add_factor(factor);
+                auto* edge = new IdentityEdge(vid, var, "U");
+                factor->add_edge(edge);
+            }
+            factor_ptr_map["D"].push_back(factor);
+        }
+    }
+}
 void FactorGraph::generate_BDC_instance() {
     if (world.rank() == 0) { // master
         auto *var0 = new BinaryVariable(0, 0, 0.0, "B");
@@ -311,3 +349,5 @@ void FactorGraph::generate_BFD_instance() {
         var2->set_factor_vec({factor1});
     }
 }
+
+

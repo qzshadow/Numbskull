@@ -25,6 +25,8 @@ public:
 
     inline void set_value(int value) {_value = value;};
 
+    inline void add_factor(Factor* fac) {_factor_ptr_vec->push_back(fac);}
+
     inline void set_factor_vec(std::vector<Factor *> fac_vec) {_factor_ptr_vec = std::make_unique<std::vector<Factor*>>(fac_vec);};
 
 protected:
@@ -32,7 +34,7 @@ protected:
     int _value = 0;
     float _prior_energy = 0.0;
     std::string _assign;
-    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec;// = nullptr;
+    std::unique_ptr<std::vector<Factor *>> _factor_ptr_vec = std::make_unique<std::vector<Factor*>>();// = nullptr;
 
     Variable() = default;
     Variable(size_t vid, int value, float prior_energy, std::string assign);

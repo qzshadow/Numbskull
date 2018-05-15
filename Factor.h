@@ -27,9 +27,11 @@ public:
 
     size_t get_fid() { return _fid; }
 
+    inline void add_edge(Edge*edge) {_edge_ptr_vec->push_back(edge);}
+
 protected:
     size_t _fid = SIZE_MAX;
-    std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec;
+    std::unique_ptr<std::vector<Edge *>> _edge_ptr_vec = std::make_unique<std::vector<Edge*>>();
     float _weight = 1.0;
     std::string _assign;
 };

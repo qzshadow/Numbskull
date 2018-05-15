@@ -13,7 +13,8 @@ int main() {
 
     FactorGraph graph;
     // graph.generate_AED_instance();
-    graph.generate_AGC_instance();
+    // graph.generate_BFD_instance();
+    graph.gen_BDC_instance(workers_rank.size(),1,2,1);
     graph.gibbs(num_samples, master_rank, workers_rank);
 
 }
