@@ -349,40 +349,4 @@ void FactorGraph::gen_BFD_instance(size_t worker_nums, size_t var_num_on_master,
         }
     }
 }
-void FactorGraph::generate_BFD_instance() {
-    if (world.rank() == 0) {
-        auto *var0 = new BinaryVariable(0, 0, 0.0, "B");
-        auto *var1 = new BinaryVariable(1, 0, 0.0, "D1");
-        auto *var2 = new BinaryVariable(2, 0, 0.0, "D2");
-        this->var_ptr_map["B"] = {var0};
-        this->var_ptr_map["D1"] = {var1};
-        this->var_ptr_map["D2"] = {var2};
-        auto *edge0 = new IdentityEdge(0, var0, "E1");
-        auto *edge1 = new IdentityEdge(1, var1, "E1");
-        auto *edge2 = new IdentityEdge(2, var0, "E2");
-        auto *edge3 = new IdentityEdge(3, var2, "E2");
-        auto *factor0 = new AndFactor(0, {edge0, edge1}, 1.0, "F1");
-        auto *factor1 = new AndFactor(1, {edge2, edge3}, 1.0, "F2");
-        var0->set_factor_vec({factor0, factor1});
-    } else if (world.rank() == 1) {
-        auto *var0 = new BinaryVariable(0, 0, 0.0, "B");
-        auto *var1 = new BinaryVariable(1, 0, 0.0, "D");
-        this->var_ptr_map["D"] = {var1};
-        this->var_ptr_map["B"] = {var0};
-        auto *edge0 = new IdentityEdge(0, var0, "E");
-        auto *edge1 = new IdentityEdge(1, var1, "E");
-        auto *factor0 = new AndFactor(0, {edge0, edge1}, 1.0, "F");
-        var1->set_factor_vec({factor0});
-    } else if (world.rank() == 2) {
-        auto *var0 = new BinaryVariable(0, 0, 0.0, "B");
-        auto *var2 = new BinaryVariable(2, 0, 0.0, "D");
-        this->var_ptr_map["D"] = {var2};
-        this->var_ptr_map["B"] = {var0};
-        auto *edge2 = new IdentityEdge(2, var0, "E");
-        auto *edge3 = new IdentityEdge(3, var2, "E");
-        auto *factor1 = new AndFactor(1, {edge2, edge3}, 1.0, "F");
-        var2->set_factor_vec({factor1});
-    }
-}
-
 

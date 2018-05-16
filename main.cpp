@@ -12,9 +12,10 @@ int main() {
     size_t num_samples = 10000;
 
     FactorGraph graph;
-    // graph.generate_AED_instance();
-    // graph.generate_BFD_instance();
-    graph.gen_BDC_instance(workers_rank.size(),1,2,1);
+    // graph.gen_BDC_instance(workers_rank.size(),2,1,1);
+    // graph.gen_AGC_instance(workers_rank.size(), 2, 1,1);
+    // graph.gen_AED_instance(workers_rank.size(), 1,1,2);
+    graph.gen_BFD_instance(workers_rank.size(), 1,1,1);
     graph.gibbs(num_samples, master_rank, workers_rank);
 
 }

@@ -23,19 +23,15 @@
 namespace mpi = boost::mpi;
 enum class MsgType {
     M_Send_B, M_Send_P_E, M_Send_P_G,
-    W_Send_D, W_Send_P_D, W_Send_P_E, W_Send_P_G,
+    W_Send_D, W_Send_P_D, W_Send_P_G,
 };
 
 class FactorGraph {
 public:
     void gen_BDC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
-    // void generate_BDC_instance();
-    // void generate_AGC_instance();
     void gen_AGC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
     void gen_AED_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
-    void generate_AED_instance();
     void gen_BFD_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
-    void generate_BFD_instance();
 
     void gibbs(size_t num_samples, int master_rank, std::vector<int> workers_rank);
 public:
