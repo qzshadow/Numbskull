@@ -29,8 +29,9 @@ enum class MsgType {
 class FactorGraph {
 public:
     void gen_BDC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
-    void generate_BDC_instance();
-    void generate_AGC_instance();
+    // void generate_BDC_instance();
+    // void generate_AGC_instance();
+    void gen_AGC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor);
     void generate_AED_instance();
     void generate_BFD_instance();
 
