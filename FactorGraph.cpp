@@ -254,33 +254,50 @@ void FactorGraph::gen_AGC_instance(size_t worker_nums, size_t var_num_on_master,
         }
     }
 }
-//void FactorGraph::generate_AGC_instance() {
-//    if (world.rank() == 0) {
-//        auto *var0 = new BinaryVariable(0, 0, 0.0, "A");
-//        auto *edge0 = new IdentityEdge(0, var0, "A");
-//        auto *edge2 = new IdentityEdge(2, var0, "A");
-//        auto *pfactor0 = new PatialAndFactor(0, {edge0}, 1.0, "G1");
-//        auto *pfactor2 = new PatialAndFactor(2, {edge2}, 1.0, "G2");
-//        this->var_ptr_map["A"] = {var0};
-//        this->partial_factor_ptr_map["G1"] = {pfactor0};
-//        this->partial_factor_ptr_map["G2"] = {pfactor2};
-//        var0->set_factor_vec({pfactor0, pfactor2});
-//    } else if (world.rank() == 1) {
-//        auto *var1 = new BinaryVariable(1, 0, 0.0, "C");
-//        auto *edge1 = new IdentityEdge(1, var1, "C");
-//        auto *pfactor1 = new PatialAndFactor(1, {edge1}, 1.0, "G");
-//        this->var_ptr_map["C"] = {var1};
-//        this->partial_factor_ptr_map["G"] = {pfactor1};
-//        var1->set_factor_vec({pfactor1});
-//    } else if (world.rank() == 2) {
-//        auto *var2 = new BinaryVariable(2, 0, 0.0, "C");
-//        auto *edge3 = new IdentityEdge(3, var2, "C");
-//        auto *pfactor3 = new PatialAndFactor(3, {edge3}, 1.0, "G");
-//        this->var_ptr_map["C"] = {var2};
-//        this->partial_factor_ptr_map["G"] = {pfactor3};
-//        var2->set_factor_vec({pfactor3});
-//    }
-//}
+
+void FactorGraph::gen_AED_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor) {
+    if (world.rank() == 0) {
+        size_t vid = 0;
+        std::vector<Edge*> A_var_edges;
+        for (; vid < var_num_on_master; ++vid) {
+            auto* var = new BinaryVariable(vid, 0, 0.0, "A");
+            var_ptr_map["A"].push_back(var);
+            auto* edge = new IdentityEdge(vid, var, "U");
+            A_var_edges.push_back(edge);
+        }
+        for (auto w = 0; w < worker_nums; ++w) {
+            std::string factor_assign = "E" + std::to_string(w + 1);
+            std::string var_assign = "D" + std::to_string(w + 1);
+            for (auto fid = 0; fid < factor_num_per_worker; ++fid) {
+                auto* factor = new AndFactor(fid, A_var_edges, 1.0, factor_assign);
+                for (; vid < var_num_on_master + w * factor_num_per_worker * var_num_per_factor + (fid + 1) * var_num_per_factor; vid++) {
+                    auto* var = new BinaryVariable(vid, 0, 0.0, var_assign);
+                    var_ptr_map[var_assign].push_back(var);
+                    var->add_factor(factor);
+                    auto* edge = new IdentityEdge(vid, var, "U");
+                    factor->add_edge(edge);
+                }
+                factor_ptr_map[factor_assign].push_back(factor);
+                for (auto& var : var_ptr_map["A"]) {
+                    var->add_factor(factor);
+                }
+            }
+        }
+    } else {
+        size_t vid = 0;
+        for (auto fid = 0; fid < factor_num_per_worker; ++fid) {
+            auto* factor = new PatialAndFactor(fid, {}, 1.0, "E");
+            for (; vid < (fid + 1) * var_num_per_factor; ++vid) {
+                auto var = new BinaryVariable(vid, 0, 0.0, "D");
+                var_ptr_map["D"].push_back(var);
+                var->add_factor(factor);
+                auto* edge = new IdentityEdge(vid, var, "U");
+                factor->add_edge(edge);
+            }
+            partial_factor_ptr_map["E"].push_back(factor);
+        }
+    }
+}
 
 void FactorGraph::generate_AED_instance() {
     if (world.rank() == 0) {
@@ -321,6 +338,9 @@ void FactorGraph::generate_AED_instance() {
     }
 }
 
+void FactorGraph::gen_BFD_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker, size_t var_num_per_factor) {
+
+}
 void FactorGraph::generate_BFD_instance() {
     if (world.rank() == 0) {
         auto *var0 = new BinaryVariable(0, 0, 0.0, "B");
