@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     size_t factor_num_per_worker = atoll(argv[4]);
     size_t var_num_per_factor = atoll(argv[5]);
 
+
     const int master_rank = 0;
     FactorGraph graph;
     std::vector<int> workers_rank;
@@ -26,7 +27,7 @@ int main(int argc, char *argv[]) {
     // graph.gen_AED_instance(workers_rank.size(), 1,1,2);
 
 
-    if (gtype == "BDC") graph.gen_BFD_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
+    if (gtype == "BDC") graph.gen_BDC_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
     else if (gtype == "BFD") graph.gen_BFD_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
     else if (gtype == "AGC") graph.gen_AGC_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
     else if (gtype == "AED") graph.gen_AED_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
