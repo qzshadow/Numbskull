@@ -167,11 +167,11 @@ void FactorGraph::gibbs(size_t num_samples, int master_rank, std::vector<int> wo
 
     }
     /****************** statistics *****************************************************/
-    for (auto &entry : counter) {
-        for (int v = 0; v < 2; ++v)
-            std::cout << "machine#" << world.rank() << " var: " << entry.first << " value: " << v << " count: "
-                      << entry.second[v] << std::endl;
-    }
+    //for (auto &entry : counter) {
+    //    for (int v = 0; v < 2; ++v)
+    //        std::cout << "machine#" << world.rank() << " var: " << entry.first << " value: " << v << " count: "
+    //                  << entry.second[v] << std::endl;
+    //}
 }
 
 void FactorGraph::gen_BDC_instance(size_t worker_nums, size_t var_num_on_master, size_t factor_num_per_worker,
