@@ -80,18 +80,44 @@ Use the correct URL and login info to check the project to local machine
 4. Choose "File->Settings", search for "Toolchains", in the right panel, change C Compiler to "/usr/bin/mpicc", change C++ Compiler to "/usr/bin/mpic++", you do not need to change CMake and Debugger, using the Bundled is fine.
 
 5. Choose "Run->Edit Configurations", add a Application called Numbskull and configure is in the following ways:
-The working directory should correspond to the the ClionProjects folder on your machine.
+**The working directory should correspond to the the ClionProjects folder on your machine.**
 <img src="doc/configuration.png" width="800" />
 
+6. syntax for *Program arguments* is
+```
+-np total_machine  Numbskull graph_type num_samples num_var_on_master num_fac_per_worker num_var_per_fac
+```
+so the configuration in above figure means "create a 1 master,
+ 2 worker cluster, 1 variable on master, 1 factor per worker,
+  1 variable per factor on worker, using `BDC` partition,
+  sample every variable for 1000 times."
+ 
+7. then hit the green triangle button (run) in the up right cornel of CLion,
+ the output should be like this:
+ ```text
+/usr/bin/mpirun -np 3 Numbskull BDC 1000 1 1 1
+machine#0 var: 0 value: 0 count: 219
+machine#0 var: 0 value: 1 count: 781
+machine#1 var: 1 value: 0 count: 304
+machine#1 var: 1 value: 1 count: 696
+machine#2 var: 1 value: 0 count: 322
+machine#2 var: 1 value: 1 count: 678
+
+Process finished with exit code 0
+```
+again, due to randomness, the count will not be exactly as above, however,
+ the ratio should be similar.
 ## Debug
 Debug using multiple GDB instance:
 
 In a terminal, get into the folder contains runable "Numbskull", generally it will be located at "~/CLionProjects/Numbskull/cmake-build-debug", using the command
 ```
-mpirun -np 3 xterm -e gdb Numbskull
+mpirun -np [NUM] xterm -e gdb Numbskull [PARAMETERS]
 ```
-3 is the total machine number of master and workers
+
+[NUM] should be replaced to the total machine number of master and workers,
+[PARAMETERS] should be replaced by `graph_type num_samples num_var_on_master num_fac_per_worker num_var_per_fac`
 
 ## Other things helps you debug
-every time see error like "invaild world rank"
+if you are using CLion, every time see error like "invaild world rank"
 check **Executable** in the run configuration (see the graph above), make sure it is **mpirun** rather than Numbskull.
