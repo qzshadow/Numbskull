@@ -10,11 +10,4 @@ do for worker_num in 2 4 6 8
     done
 done
 
-#mpirun -np 3 ./Numbskull BDC 1000 1 1 1
-#echo ""
-#mpirun -np 3 ./Numbskull BDC 1000 1 2 1
-#echo ""
-#mpirun -np 3 ./Numbskull BDC 1000 1 1 2
-#echo ""
-#mpirun -np 3 ./Numbskull BDC 1000 2 1 1
 

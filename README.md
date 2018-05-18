@@ -21,9 +21,53 @@ mkdir cmake-build-debug && cd cmake-build-debug
 cmake -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpic++ ..
 make
 cd ../test
-sh ./test.sh
+chmod a+x ./test.sh && sh ./test.sh
 ```
-Script `test.sh` will test your deployment. The output should like:
+Script `test.sh` will test your deployment. 
+it will runs four simple graph partitioned in `BDC` type,
+see the source code for detailed configuration. 
+The correct output should looks like, due to randomness,
+the exact count when you run will be slightly different from this, 
+however, the ratio for one variable take 0 or 1 will be similar.
+```text
+machine#1 var: 1 value: 0 count: 320
+machine#1 var: 1 value: 1 count: 680
+machine#2 var: 1 value: 0 count: 311
+machine#2 var: 1 value: 1 count: 689
+machine#0 var: 0 value: 0 count: 215
+machine#0 var: 0 value: 1 count: 785
+
+machine#0 var: 0 value: 0 count: 67
+machine#0 var: 0 value: 1 count: 933
+machine#1 var: 2 value: 0 count: 284
+machine#1 var: 2 value: 1 count: 716
+machine#1 var: 1 value: 0 count: 296
+machine#1 var: 1 value: 1 count: 704
+machine#2 var: 2 value: 0 count: 283
+machine#2 var: 2 value: 1 count: 717
+machine#2 var: 1 value: 0 count: 282
+machine#2 var: 1 value: 1 count: 718
+
+machine#0 var: 0 value: 0 count: 336
+machine#0 var: 0 value: 1 count: 664
+machine#1 var: 2 value: 0 count: 373
+machine#1 var: 2 value: 1 count: 627
+machine#1 var: 1 value: 0 count: 380
+machine#1 var: 1 value: 1 count: 620
+machine#2 var: 2 value: 0 count: 408
+machine#2 var: 2 value: 1 count: 592
+machine#2 var: 1 value: 0 count: 417
+machine#2 var: 1 value: 1 count: 583
+
+machine#0 var: 1 value: 0 count: 285
+machine#0 var: 1 value: 1 count: 715
+machine#0 var: 0 value: 0 count: 301
+machine#0 var: 0 value: 1 count: 699
+machine#1 var: 2 value: 0 count: 355
+machine#1 var: 2 value: 1 count: 645
+machine#2 var: 2 value: 0 count: 348
+machine#2 var: 2 value: 1 count: 652
+```
 
 ## Import the project to Clion
 1. Download Clion 2018.1 at https://www.jetbrains.com/clion/ and install it
@@ -38,18 +82,6 @@ Use the correct URL and login info to check the project to local machine
 5. Choose "Run->Edit Configurations", add a Application called Numbskull and configure is in the following ways:
 The working directory should correspond to the the ClionProjects folder on your machine.
 <img src="doc/configuration.png" width="800" />
-
-6. we provide four diffient instance to test the framework, they are:
-    1. BDC graph
-    2. BFD graph
-    3. AGC graph
-    4. AED graph
-    
-   to test any of them, you need to change the included source file in the `CMakeList.txt` file (e.g. from `test/BDC.cpp` to `test/BFD.cpp`), then hit the green triangle button in the right top corner of the editor to run a BFD instance.
-
-7. For BDC, BFD, AED instance, the correct result for this graph will be count of var0 takes value 1 / value 0 = 0.78 / 0.22;
-count of var1 or var2 takes value 1 / value 0 = 0.68 / 0.32;
-
 
 ## Debug
 Debug using multiple GDB instance:

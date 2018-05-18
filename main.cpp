@@ -33,10 +33,10 @@ int main(int argc, char *argv[]) {
     else if (gtype == "AED") graph.gen_AED_instance(workers_rank.size(), var_num_on_master, factor_num_per_worker, var_num_per_factor);
     else std::cerr<<"unsupport graph type";
 
-    auto timer = mpi::timer();
+    // auto timer = mpi::timer();
     graph.gibbs(num_samples, master_rank, workers_rank);
-    if (graph.world.rank() == 0) {
-        std::cout<<gtype<<"\t"<<num_samples<<"\t"<<var_num_on_master<<"\t"<<factor_num_per_worker<<"\t"<<var_num_per_factor<<std::endl;
-        std::cout<<timer.elapsed()<<std::endl;
-    }
+//    if (graph.world.rank() == 0) {
+//        std::cout<<gtype<<"\t"<<num_samples<<"\t"<<var_num_on_master<<"\t"<<factor_num_per_worker<<"\t"<<var_num_per_factor<<std::endl;
+//        std::cout<<timer.elapsed()<<std::endl;
+//    }
 }
