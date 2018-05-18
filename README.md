@@ -8,9 +8,22 @@ Still developing...
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install libboost-all-dev cmake
+sudo apt install libboost-all-dev cmake build-essential
 ```
 These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
+
+Build the project and run test case
+```bash
+cd ~
+git clone https://github.com/qzshadow/Numbskull.git
+cd Numbskull
+mkdir cmake-build-debug && cd cmake-build-debug
+cmake -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpic++ ..
+make
+cd ../test
+sh ./test.sh
+```
+Script `test.sh` will test your deployment. The output should like:
 
 ## Import the project to Clion
 1. Download Clion 2018.1 at https://www.jetbrains.com/clion/ and install it
