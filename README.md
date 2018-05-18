@@ -24,11 +24,13 @@ cd ../test
 chmod a+x ./test.sh && sh ./test.sh
 ```
 Script `test.sh` will test your deployment. 
-it will runs four simple graph partitioned in `BDC` type,
-see the source code for detailed configuration. 
-The correct output should looks like, due to randomness,
-the exact count when you run will be slightly different from this, 
-however, the ratio for one variable take 0 or 1 will be similar.
+it will run four simple graphs partitioned by `BDC` type,
+see source code of `test.sh` for detailed configuration. 
+The reasonable output should looks like this:
+ 
+ (due to randomness,
+the exact count will be slightly different from this, 
+however, the ratio for one variable take 0 or 1 will be similar)
 ```text
 machine#1 var: 1 value: 0 count: 320
 machine#1 var: 1 value: 1 count: 680
@@ -83,16 +85,16 @@ Use the correct URL and login info to check the project to local machine
 **The working directory should correspond to the the ClionProjects folder on your machine.**
 <img src="doc/configuration.png" width="800" />
 
-6. syntax for *Program arguments* is
+6. Syntax for *Program arguments* is
 ```
 -np total_machine  Numbskull graph_type num_samples num_var_on_master num_fac_per_worker num_var_per_fac
 ```
 so the configuration in above figure means "create a 1 master,
- 2 worker cluster, 1 variable on master, 1 factor per worker,
-  1 variable per factor on worker, using `BDC` partition,
-  sample every variable for 1000 times."
- 
-7. then hit the green triangle button (run) in the up right cornel of CLion,
+2 worker cluster, 1 variable on master, 1 factor per worker,
+1 variable per factor on worker, using `BDC` partition,
+sample every variable for 1000 times."
+
+7. Then hit the green triangle button (run) in the up right corner of CLion,
  the output should be like this:
  ```text
 /usr/bin/mpirun -np 3 Numbskull BDC 1000 1 1 1
@@ -105,7 +107,7 @@ machine#2 var: 1 value: 1 count: 678
 
 Process finished with exit code 0
 ```
-again, due to randomness, the count will not be exactly as above, however,
+Again, due to randomness, the count will not be exactly as above, however,
  the ratio should be similar.
 ## Debug
 Debug using multiple GDB instance:
