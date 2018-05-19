@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstddef>
 #include <memory>
+#include <string>
 
 //#include "Factor.h"
 class Factor; // Forward declare Factor class to break out the circular include of Factor Edge and Variable

@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include "Variable.h"
+#include <string>
 
 class Edge {
 public:
