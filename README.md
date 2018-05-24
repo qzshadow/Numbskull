@@ -8,7 +8,7 @@ Still developing...
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install libboost-all-dev cmake build-essential
+sudo apt install libboost-all-dev cmake build-essential git
 ```
 These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
 
@@ -16,7 +16,7 @@ These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install libboost-all-dev cmake build-essential
+sudo apt install libboost-all-dev cmake build-essential git
 ```
 These commands will install boost 1.65.1, openmip 2.2.1 and cmake 3.10.2
 
