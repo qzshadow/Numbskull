@@ -12,6 +12,14 @@ sudo apt install libboost-all-dev cmake build-essential
 ```
 These commands will install boost 1.58.0, openmpi 1.10.2 and cmake 3.5.1
 
+### Ubuntu 18.04
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install libboost-all-dev cmake build-essential
+```
+These commands will install boost 1.65.1, openmip 2.2.1 and cmake 3.10.2
+
 Build the project and run test case
 ```bash
 cd ~
