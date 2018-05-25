@@ -144,7 +144,7 @@ void FactorGraph::gibbs(size_t num_samples, int master_rank, std::vector<int> wo
                     D_var_vec[i] = var_ptr_map["D"][i]->get_value();
                 world.send(master_rank, static_cast<int>(MsgType::W_Send_D), D_var_vec);
             }
-            /************************ Worker eval patial factor values ***************************/
+            /************************ Worker eval partial factor values ***************************/
             // Worker computes partial evaluation of all D_i-key factors, and transmits them to master
             if (this->factor_ptr_map.count("D")) {
                 size_t worker_D_pf_size = this->factor_ptr_map["D"].size();
@@ -188,14 +188,13 @@ void FactorGraph::gen_BDC_instance(size_t worker_nums, size_t var_num_on_master,
             std::string worker_assign = "D" + std::to_string(w + 1);
             for (auto fac_idx = 0; fac_idx < factor_num_per_worker; ++fac_idx) {
                 auto pfid = w * worker_nums + fac_idx;
-                auto *partial_fac = new PatialAndFactor(pfid, B_var_edges, 1.0, worker_assign);
+                auto *partial_fac = new PartialAndFactor(pfid, B_var_edges, 1.0, worker_assign);
                 partial_factor_ptr_map[worker_assign].push_back(partial_fac);
                 for (auto &var : var_ptr_map["B"])
                     var->add_factor(partial_fac);
             }
         }
     } else {
-        //int worker_rank = world.rank();
         std::vector<Edge *> B_var_edges;
         size_t vid = 0;
         for (; vid < var_num_on_master; ++vid) {
@@ -233,7 +232,7 @@ void FactorGraph::gen_AGC_instance(size_t worker_nums, size_t var_num_on_master,
             std::string worker_assign = "G" + std::to_string(w + 1);
             for (auto fac_idx = 0; fac_idx < factor_num_per_worker; ++fac_idx) {
                 auto pfid = w * worker_nums + fac_idx;
-                auto *partial_fac = new PatialAndFactor(pfid, A_var_edges, 1.0, worker_assign);
+                auto *partial_fac = new PartialAndFactor(pfid, A_var_edges, 1.0, worker_assign);
                 partial_factor_ptr_map[worker_assign].push_back(partial_fac);
                 for (auto &var : var_ptr_map["A"])
                     var->add_factor(partial_fac);
@@ -242,7 +241,7 @@ void FactorGraph::gen_AGC_instance(size_t worker_nums, size_t var_num_on_master,
     } else {
         size_t vid = 0;
         for (auto fid = 0; fid < factor_num_per_worker; fid++) {
-            auto *factor = new PatialAndFactor(fid, {}, 1.0, "G");
+            auto *factor = new PartialAndFactor(fid, {}, 1.0, "G");
             for (; vid < (fid + 1) * var_num_per_factor; vid++) {
                 auto *var = new BinaryVariable(vid, 0, 0.0, "C");
                 var_ptr_map["C"].push_back(var);
@@ -286,7 +285,7 @@ void FactorGraph::gen_AED_instance(size_t worker_nums, size_t var_num_on_master,
     } else {
         size_t vid = 0;
         for (auto fid = 0; fid < factor_num_per_worker; ++fid) {
-            auto* factor = new PatialAndFactor(fid, {}, 1.0, "E");
+            auto* factor = new PartialAndFactor(fid, {}, 1.0, "E");
             for (; vid < (fid + 1) * var_num_per_factor; ++vid) {
                 auto var = new BinaryVariable(vid, 0, 0.0, "D");
                 var_ptr_map["D"].push_back(var);

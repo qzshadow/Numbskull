@@ -20,7 +20,6 @@ float AndFactor::eval() {
         result = result && edge_ptr->transform();
         if (!result) break;
     }
-    //std::cout<<result*_weight<<std::endl;
     return result * _weight;
 }
 
@@ -47,13 +46,12 @@ AndFactor::AndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight,
 
 }
 
-PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
-        PatialFactor(fid, edge_ptr_vec, weight),
+PartialAndFactor::PartialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
+        PartialFactor(fid, edge_ptr_vec, weight),
         AndFactor(fid, edge_ptr_vec, weight),
     Factor(fid, edge_ptr_vec, weight){}
 
-float PatialAndFactor::eval() {
-    //std::cout<<_patial_val<<std::endl;
+float PartialAndFactor::eval() {
     bool res = _patial_val;
     for (auto &edge_ptr : *_edge_ptr_vec) {
         res = res && edge_ptr->transform();
@@ -62,15 +60,15 @@ float PatialAndFactor::eval() {
     return res * _weight;
 }
 
-PatialAndFactor::PatialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign)
-        : PatialFactor(fid, edge_ptr_vec, weight, assign),
+PartialAndFactor::PartialAndFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign)
+        : PartialFactor(fid, edge_ptr_vec, weight, assign),
             AndFactor(fid, edge_ptr_vec, weight, assign),
             Factor(fid, edge_ptr_vec, weight, assign){
 
 }
 
-PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
+PartialFactor::PartialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight) :
         Factor(fid, edge_ptr_vec, weight) {}
 
-PatialFactor::PatialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) :
+PartialFactor::PartialFactor(size_t fid, std::vector<Edge *> edge_ptr_vec, float weight, std::string assign) :
         Factor(fid, edge_ptr_vec,weight, assign) {}

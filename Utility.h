@@ -1,5 +1,5 @@
 //
-// The utility function used in this project
+// The utility provide helper functions for resampling
 //
 
 #ifndef NUMBSKULL_UTILITY_H

@@ -81,7 +81,7 @@ int main() {
             }
 
         } else { // for worker machines
-            // recieve B variables transferred from master, save it as cached variable
+            // receive B variables transferred from master, save it as cached variable
             std::vector<int> val_vec; //(graph.var_ptr_map["B"].size());
             world.recv(master_rank, static_cast<int>(MsgType::M_Send_B), val_vec);
             for (size_t i = 0; i < val_vec.size(); ++i) graph.var_ptr_map["B"][i]->set_value(val_vec[i]);

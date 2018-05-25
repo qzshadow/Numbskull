@@ -120,7 +120,7 @@ Again, due to randomness, the count will not be exactly as above, however,
 ## Debug
 Debug using multiple GDB instance:
 
-In a terminal, get into the folder contains runable "Numbskull", generally it will be located at "~/CLionProjects/Numbskull/cmake-build-debug", using the command
+In a terminal, get into the folder contains runnable "Numbskull", generally it will be located at "~/CLionProjects/Numbskull/cmake-build-debug", using the command
 ```
 mpirun -np [NUM] xterm -e gdb Numbskull [PARAMETERS]
 ```

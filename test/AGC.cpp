@@ -64,10 +64,10 @@ int main() {
             // master receive G partial factor from workers, update it's own cache
             for (auto worker_rank : workers_rank) {
                 std::string key = "G" + std::to_string(worker_rank);
-                std::vector<float> recieve_partial_factor_vec;
-                world.recv(worker_rank, static_cast<int>(MsgType::W_Send_P_G), recieve_partial_factor_vec);
-                for (size_t i = 0; i < recieve_partial_factor_vec.size(); ++i)
-                    graph.partial_factor_ptr_map[key][i]->set_partial_val(recieve_partial_factor_vec[i]);
+                std::vector<float> receive_partial_factor_vec;
+                world.recv(worker_rank, static_cast<int>(MsgType::W_Send_P_G), receive_partial_factor_vec);
+                for (size_t i = 0; i < receive_partial_factor_vec.size(); ++i)
+                    graph.partial_factor_ptr_map[key][i]->set_partial_val(receive_partial_factor_vec[i]);
             }
             // master runs a single pass of Gibbs sampling on the variable it owns
             for (auto& var : graph.var_ptr_map["A"]) {
@@ -77,10 +77,10 @@ int main() {
 
         } else { // workers
             // worker receive all transmission from master, updates its G partial factor
-            std::vector<float> recieve_partial_factor_vec;
-            world.recv(master_rank, static_cast<int>(MsgType::M_Send_P_G), recieve_partial_factor_vec);
-            for (size_t i = 0; i < recieve_partial_factor_vec.size(); ++i)
-                graph.partial_factor_ptr_map["G"][i]->set_partial_val(recieve_partial_factor_vec[i]);
+            std::vector<float> receive_partial_factor_vec;
+            world.recv(master_rank, static_cast<int>(MsgType::M_Send_P_G), receive_partial_factor_vec);
+            for (size_t i = 0; i < receive_partial_factor_vec.size(); ++i)
+                graph.partial_factor_ptr_map["G"][i]->set_partial_val(receive_partial_factor_vec[i]);
             // worker runs a single pass Gibbs sampling on the variable it owns
             for (auto& var : graph.var_ptr_map["C"]) {
                 var->resample();

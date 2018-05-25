@@ -73,11 +73,11 @@ int main() {
                     partial_factor_vec[i] = graph.factor_ptr_map[key][i]->partial_eval({"A"});
                 world.send(worker_rank, static_cast<int>(MsgType::M_Send_P_E), partial_factor_vec);
             }
-            // master recieve D variable values from workers
-            for (auto woker_rank : workers_rank) {
-                std::string key = "D" + std::to_string(woker_rank);
+            // master receive D variable values from workers
+            for (auto worker_rank : workers_rank) {
+                std::string key = "D" + std::to_string(worker_rank);
                 std::vector<int> var_vec;
-                world.recv(woker_rank, static_cast<int>(MsgType::W_Send_D), var_vec);
+                world.recv(worker_rank, static_cast<int>(MsgType::W_Send_D), var_vec);
                 for (size_t i = 0; i < var_vec.size(); ++i)
                     graph.var_ptr_map[key][i]->set_value(var_vec[i]);
             }

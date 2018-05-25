@@ -59,7 +59,7 @@ int main() {
             for (size_t i = 0; i < val_vec.size(); ++i) val_vec[i] = graph.var_ptr_map["B"][i]->get_value();
             for (auto worker_rank : workers_rank)
                 world.send(worker_rank, static_cast<int>(MsgType::M_Send_B), val_vec);
-            // master recieve the lastest variable values owned by workers;
+            // master receive the latest variable values owned by workers;
             for (int worker_rank : workers_rank) {
                 std::vector<int> var_vec;
                 world.recv(worker_rank, static_cast<int>(MsgType::W_Send_D), var_vec);
@@ -69,7 +69,7 @@ int main() {
                     graph.var_ptr_map[key][i]->set_value(var_vec[i]);
                 }
             }
-            // master resmaple the its owned variables
+            // master resample the its owned variables
             for (auto &var : graph.var_ptr_map["B"]) {
                 var->resample();
                 counter[var->get_vid()][var->get_value()]++;
